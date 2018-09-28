@@ -14,7 +14,8 @@ libraryDependencies ++= Seq(
   "org.junit.platform" % "junit-platform-launcher" % "1.2.0" % Test,
   "org.junit.platform" % "junit-platform-engine" % "1.2.0" % Test,
   "org.junit.platform" % "junit-platform-runner" % "1.2.0" % Test,
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1"
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
+  "com.typesafe.akka" %% "akka-actor" % "2.5.16"
 )
 
 testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework")
@@ -23,5 +24,6 @@ parallelExecution in Test := false
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("releases"),
-  Resolver.sonatypeRepo("snapshots")
+  Resolver.sonatypeRepo("snapshots"),
+  Classpaths.typesafeReleases
 )
