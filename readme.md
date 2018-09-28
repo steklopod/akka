@@ -205,6 +205,141 @@ _Рассмотрим построение небольшого приложен
    }
 ```
 
+## Распределенные акторы
 
+Разумеется, этот пример с одним или даже несколькими акторами в одном приложении с хранилищем не очень интересен.
+
+Суть библиотеки akka в том, что построение локального приложения максимально приближено к распределенному и поэтому добавление распределения акторов по приложениям или машинам не составляет труда.
+
+Для этого достаточно добавить следующую библиотеку в `build.sbt`:
+
+```scala
+    libraryDependencies ++= Seq( "com.typesafe.akka" %% "akka-actor" % "2.5.16" )
+```
+
+И сконфигурировать создание акторов в файле `src/main/resources/application.conf`:
+
+```scala
+    akka {
+      actor.provider = "akka.remote.RemoteActorRefProvider"
+    
+      remote {
+        enabled-transports = ["akka.remote.netty.tcp"]
+    
+        netty.tcp {
+          hostname = "127.0.0.1" // либо внешний ip-адрес
+          port = 2552
+        }
+      }
+    }
+    
+    client {
+      akka.remote.netty.tcp.port = 0 // "любой" порт
+    }
+```
+
+Разделим приложение на `StorageApp` и `ClientApp`:
+
+```scala
+    object StorageApp extends App {
+      val actorSystem = ActorSystem("storage-system")
+      val storage: ActorRef = actorSystem.actorOf(Props[Storage], "storage")
+      readLine()
+      actorSystem.terminate()
+    }
+    
+    object ClientApp extends App {
+      import com.typesafe.config.ConfigFactory
+      import scala.concurrent.duration._
+    
+      // переопределим часть конфигурации секцией "client"
+      val rootConfig = ConfigFactory.load()
+      val config = rootConfig.getConfig("client").withFallback(rootConfig)
+    
+      // создадим актор систему и актора-клиента
+      val actorSystem = ActorSystem("client-system", config)
+      val client: ActorRef = actorSystem.actorOf(Props[Client])
+    
+      // полный akka-путь к Storage
+      val storagePath = "akka.tcp://storage-system@127.0.0.1:2552/user/storage"
+    
+      val storageSelection = actorSystem.actorSelection(storagePath)
+    
+      // ждем ответа
+      val resolveTimeout = FiniteDuration(10, SECONDS)
+    
+      storageSelection.resolveOne(resolveTimeout).foreach { (storage: ActorRef) =>
+        // командуем клиенту присоединиться к хранилищу
+        println(s"Connected to $storage")
+        client ! Client.Connect(storage)
+      } (actorSystem.dispatcher) // контекст в которым выполнится Future
+    }
+```
+
+Как видно из листинга выше, каждый актор в akka имеет путь в виде:
+
+```scala
+    akka.<протокол>://<актор-система>@<ip-адрес>:<порт>/user/<актор>
+```
+
+Обнаружение акторов происходит при помощи методов `.actorSelection` и `.resolveOne` как описано выше.
+
+Запустим одно хранилище:
+
+```scala
+    $ sbt "run-main storage.StorageApp"
+```
+
+И произвольное количество клиентов в разных терминалах:
+
+```scala
+    $ sbt "run-main storage.ClientApp"
+```
+
+Теперь мы можем помещать значения в общее хранилище командами `put key value` и считывать их в любом клиенте командой `get key`.
+
+Полный код реализации доступен на https://github.com/groz/akka-classroom.
+
+### Кратко основное
+
+* Каждый актор принадлежит одной системе акторов (`ActorSystem`)
+
+* Акторы не создаются напрямую при помощи new, а возвращаются в виде ссылки `ActorRef` вызовами `actorSystem.actorOf`
+ или `context.actorOf` (внутри актора)
+
+* Методы акторов не вызываются напрямую, а все взаимодействие происходит отправкой сообщений ссылке на актор `ActorRef`
+ вызовами `actor ! msg`
+
+* Все принятые сообщения накапливаются в очереди сообщений актора, откуда выбираются на обработку методом `receive`
+ строго по одному
+
+* Переход актора из одного состояния в другое реализуется функцией `context.become(newReceive)`
+
+* Отправитель сообщения доступен в функции-обработчике под именем `sender`
+
+* Обнаружение удаленных акторов производится при помощи метода `resolveOne` класса `ActorSelection`
+
+### Закрепление
+
+Для закрепления материала предлагается добавить возможность клиентам подписываться на изменения хранилища.
+
+Для этого клиент может посылать хранилищу соообщения:
+
+
+```scala
+    case object Subscribe
+    case object Unsubscribe
+```
+
+А хранилище может передавать между состояниями список подписавшихся клиентов:
+
+
+```scala
+    def process(store: Map[String, String], subscribers: Set[ActorRef]): Receive
+```
+
+Куда оно будет добавлять `sender` из сообщений `Subscribe`.
+
+При получении сообщений `Put` и `Delete` от остальных клиентов хранилище может отправлять сообщения всем текущим подписчикам.
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
