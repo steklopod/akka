@@ -30,6 +30,20 @@
 * **Легкий** - каждый экземпляр потребляет всего несколько сотен байтов, что реально позволяет миллионам одновременно 
 действующих акторов существовать в одном приложении.
 
+### Что делает `Hello World`?
+
+Как вы видели на консольном выводе, в примере выводится несколько приветствий. Давайте посмотрим, что происходит во время выполнения.
+
+![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-architecture.png "hello-akka-architecture")
+
+Во-первых, основной класс создает `akka.actor.ActorSystem`, контейнер, в котором работают Акторы. Затем он создает три 
+экземпляра актора `Greeter` и один экземпляр актора `Printer`.
+
+Затем пример отправляет сообщения в экземпляры актора`Greater`, которые хранят их внутри. Наконец, сообщения команд для 
+участников `Greeter` активируют их для отправки сообщений в актор `Printer`, который выводит их на консоль:
+
+![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-messages.png "hello-akka-messages")
+
 > Чтобы запустить `Hello World`:
 
 1. В консоли измените каталоги на верхний уровень распакованного проекта: 
@@ -61,20 +75,6 @@
     [INFO] [10/01/2018 12:59:05.158] [helloAkka-akka.actor.default-dispatcher-5] [akka://helloAkka/user/printerActor] Greeting received (from Actor[akka://helloAkka/user/goodDayGreeter#-623443556]): Good day, Play
     [INFO] [10/01/2018 12:59:05.158] [helloAkka-akka.actor.default-dispatcher-5] [akka://helloAkka/user/printerActor] Greeting received (from Actor[akka://helloAkka/user/howdyGreeter#338475647]): Howdy, Lightbend
 ```
-
-### Что делает `Hello World`?
-
-Как вы видели на консольном выводе, в примере выводится несколько приветствий. Давайте посмотрим, что происходит во время выполнения.
-
-![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-architecture.png "hello-akka-architecture")
-
-Во-первых, основной класс создает `akka.actor.ActorSystem`, контейнер, в котором работают Акторы. Затем он создает три 
-экземпляра актора `Greeter` и один экземпляр актора `Printer`.
-
-Затем пример отправляет сообщения в экземпляры актора`Greater`, которые хранят их внутри. Наконец, сообщения команд для 
-участников `Greeter` активируют их для отправки сообщений в актор `Printer`, который выводит их на консоль:
-
-![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-messages.png "hello-akka-messages")
 
 Давайте рассмотрим некоторые рекомендации по работе с акторами и сообщениями в контексте примера Hello World.
 
