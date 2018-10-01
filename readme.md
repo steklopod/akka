@@ -35,13 +35,13 @@
 
 ![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-architecture.png "hello-akka-architecture")
 
-1. Во-первых, основной класс (`main class`) создает `akka.actor.ActorSystem`, **контейнер, в котором работают акторы**. 
+1. Во-первых, основной класс (`main class`) создает `akka.actor.ActorSystem`, **контейнер, в котором работают акторы**; 
 
-2. Затем он создает **три экземпляра актора** `Greeter` и **один экземпляр актора** `Printer`.
+2. Затем он создает **три экземпляра актора** `Greeter` и **один экземпляр актора** `Printer`;
 
-3. Затем пример отправляет сообщения в экземпляры актора`Greater`, которые хранят их внутри. 
+3. Затем пример **отправляет сообщения в экземпляры** актора`Greater`, которые хранят их внутри;
 
-4. Наконец, инструкция команд для акторов `Greeter` активируют их для отправки сообщений в актор `Printer`, 
+4. Наконец, инструкция команд для акторов `Greeter` **активируют их для отправки сообщений** в актор `Printer`, 
 который выводит их на консоль:
 
 ![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-messages.png "hello-akka-messages")
