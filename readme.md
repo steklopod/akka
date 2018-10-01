@@ -38,6 +38,7 @@
 
 2. [Почему современным системам нужна новая модель программирования](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/why-modern-systems-need-anew-programming-model.md)
 
+3. [Как модель актера отвечает потребностям современных распределенных систем](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/how-the-actor-model-meets-the-needs-of-modern-distributed-systems.md)
 
 ### Преимущества использования модели Actor
 
