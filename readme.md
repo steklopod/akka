@@ -38,16 +38,10 @@
     cd C:\projects\Akka
  ```
 
-2. Чтобы запустить [sbt](https://www.scala-sbt.org/1.x/docs/index.html) введите:
+2. Чтобы запустить [sbt](https://www.scala-sbt.org/1.x/docs/index.html) (_`sbt` загружает зависимости проекта_) в Windows введите:
 ```sbtshell
-   sbt.bat
+    sbt.bat
 ```
-
-в Windows, или  
-```sbtshell
-    ./sbt
-```
-на OSX/Linux. _`sbt` загружает зависимости проекта. 
 
 3. В командной строке `sbt` введите 
  ```sbtshell
