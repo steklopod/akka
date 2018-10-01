@@ -50,7 +50,8 @@
 
 Давайте рассмотрим некоторые рекомендации по работе с акторами и сообщениями в контексте примера `Hello World`.
 
-
-[=>далее: Определение акторов и сообщений](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/defining-actors-and-messages.md)
+[=> далее: Определение акторов и сообщений](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/defining-actors-and-messages.md)
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
+
+[<= содержание](https://github.com/steklopod/akka/blob/akka_starter/readme.md)
