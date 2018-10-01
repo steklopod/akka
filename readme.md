@@ -41,8 +41,7 @@
 
 Как вы видели на консольном выводе, в примере выводится несколько приветствий. Давайте посмотрим, что происходит во время выполнения.
 
-![alt text](https://github.com/steklopod/akka/tree/akka_starter/src/main/resources/images/hello-akka-architecture.png "hello-akka-architecture")
-
+![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-architecture.png "hello-akka-architecture")
 
 Во-первых, основной класс создает `akka.actor.ActorSystem`, контейнер, в котором работают Акторы. Затем он создает три 
 экземпляра актора `Greeter` и один экземпляр актора `Printer`.
@@ -50,7 +49,7 @@
 Затем пример отправляет сообщения в экземпляры актора`Greater`, которые хранят их внутри. Наконец, сообщения команд для 
 участников `Greeter` активируют их для отправки сообщений в актор `Printer`, который выводит их на консоль:
 
-![alt text](https://github.com/steklopod/akka/tree/akka_starter/src/main/resources/images/hello-akka-messages.png "hello-akka-messages")
+![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-messages.png "hello-akka-messages")
 
 Использование Аккой Акторов и асинхронных сообщений приводит к ряду преимуществ. Рассмотрим несколько.
 
@@ -75,3 +74,6 @@
 
 Давайте рассмотрим некоторые рекомендации по работе с акторами и сообщениями в контексте примера Hello World.
 
+[=>далее: Определение участников и сообщений](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/defining-actors-and-messages.md)
+
+_Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
