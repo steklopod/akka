@@ -3,6 +3,7 @@ name := "Akka"
 version := "0.1"
 
 scalaVersion := "2.12.6"
+lazy val akkaVersion = "2.5.16"
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.0-SNAP10" % Test,
@@ -15,7 +16,8 @@ libraryDependencies ++= Seq(
   "org.junit.platform" % "junit-platform-engine" % "1.2.0" % Test,
   "org.junit.platform" % "junit-platform-runner" % "1.2.0" % Test,
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
-  "com.typesafe.akka" %% "akka-actor" % "2.5.16"
+  "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+  "com.typesafe.akka" %% "akka-testkit" % akkaVersion
 )
 
 testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework")
