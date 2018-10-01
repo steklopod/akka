@@ -2,8 +2,6 @@ package ru.example
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 
-
-
 object AkkaQuickstart extends App {
   import Greeter._
 
