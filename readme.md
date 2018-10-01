@@ -40,6 +40,8 @@
 
 3. [Как модель актера отвечает потребностям современных распределенных систем](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/how-the-actor-model-meets-the-needs-of-modern-distributed-systems.md)
 
+4. [Обзор библиотек и модулей Akka](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/overview-of-akka-libraries-and-modules.md)
+
 ### Преимущества использования модели Actor
 
 _Следующие характеристики `Akka` позволяют вам интуитивно решать сложные задачи параллелизма и масштабируемости:_

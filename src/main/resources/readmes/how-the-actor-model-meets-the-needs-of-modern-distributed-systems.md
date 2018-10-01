@@ -44,7 +44,7 @@
 
 ![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/images/how-the-actor-model-meets-the-needs-of-modern-distributed-systems/serialized_timeline_invariants.png "serialized_timeline_invariants")
 
-Что происходит, когда актор получает сообщение:
+#### Что происходит, когда актор получает сообщение:
 
 1. Актор добавляет сообщение в конец очереди.
 
@@ -58,7 +58,7 @@
 
 6. Актор незапланирован.
 
-Чтобы добиться такого поведения, у акторов есть:
+#### Чтобы добиться такого поведения, у акторов есть:
 
 * Почтовый ящик (очередь, в которой заканчиваются сообщения).
 
@@ -91,7 +91,7 @@
 в виде пакетов.
 
 
-[=> далее: Как модель актора отвечает потребностям современных распределенных систем](htts://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/overview-of-akka-libraries-and-modules.md)
+[=> далее: Обзор библиотек и модулей Akka](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/overview-of-akka-libraries-and-modules.md)
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
 
