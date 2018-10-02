@@ -22,7 +22,7 @@
 
 5. [Введение в пример](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/introduction-to-the-example.md)
 
-
+6. [Часть 1: Архитектура акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/part1-actor-architecture.md)
 
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
