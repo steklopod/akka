@@ -4,11 +4,26 @@
 охватывающих процессорные ядра и сети. `Akka` позволяет сосредоточиться на удовлетворении потребностей бизнеса вместо 
 написания низкоуровневого кода для обеспечения надежного поведения, отказоустойчивости и высокой производительности.
 
-
 Многие распространенные практики и принятые модели программирования не затрагивают важных проблем, присущих проектированию 
 систем для современных компьютерных архитектур. Чтобы быть успешным, распределенные системы должны справляться с ситуацией, 
 когда компоненты вылетают без ответа, сообщения теряются без следа на проводе, а латентность сети колеблется. Эти проблемы 
 возникают регулярно в тщательно управляемых средах внутри центра обработки данных - тем более в виртуализированных архитектурах.
+
+
+### Содержание:
+
+1. [Почему современным системам нужна новая модель программирования](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/why-modern-systems-need-anew-programming-model.md)
+
+2. [Как модель актера отвечает потребностям современных распределенных систем](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/how-the-actor-model-meets-the-needs-of-modern-distributed-systems.md)
+
+3. [Обзор библиотек и модулей Akka](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/overview-of-akka-libraries-and-modules.md)
+
+4. [Быстрый старт с Акка](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/akka-quicksrart.md)
+
+5. [Введение в пример](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/introduction-to-the-example.md)
+
+
+
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
 
@@ -31,16 +46,6 @@
 Изучая `Akka` и как использовать модель актора, вы получите доступ к обширному и глубокому набору инструментов, которые 
 позволят решить сложные проблемы с распределенными / параллельными системами в единой модели программирования, где все 
 будет сочетаться плотно и эффективно.
-
-### Содержание:
-
-1. [Быстрый старт с Акка](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/akka-quicksrart.md)
-
-2. [Почему современным системам нужна новая модель программирования](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/why-modern-systems-need-anew-programming-model.md)
-
-3. [Как модель актера отвечает потребностям современных распределенных систем](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/how-the-actor-model-meets-the-needs-of-modern-distributed-systems.md)
-
-4. [Обзор библиотек и модулей Akka](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/overview-of-akka-libraries-and-modules.md)
 
 ### Преимущества использования модели Actor
 
