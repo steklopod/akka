@@ -34,10 +34,10 @@ object AkkaQuickstart extends App {
   goodDayGreeter ! Greet
 }
 
-
 object Greeter {
   //#greeter-messages
-  def props(message: String, printerActor: ActorRef): Props = Props(new Greeter(message, printerActor))
+  def props(message: String, printerActor: ActorRef): Props =
+    Props(new Greeter(message, printerActor))
   //#greeter-messages
   final case class WhoToGreet(who: String)
   case object Greet
@@ -53,10 +53,10 @@ class Greeter(message: String, printerActor: ActorRef) extends Actor {
   def receive = {
     case WhoToGreet(who) =>
       greeting = message + ", " + who
-    case Greet           =>
+    case Greet =>
       //#greeter-send-message
       printerActor ! Greeting(greeting)
-      //#greeter-send-message
+    //#greeter-send-message
   }
 }
 
@@ -76,4 +76,3 @@ class Printer extends Actor with ActorLogging {
       log.info("Greeting received (from " + sender() + "): " + greeting)
   }
 }
-
