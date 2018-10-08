@@ -4,7 +4,8 @@ import akka.actor.{Actor, ActorRef, Props}
 
 class PrintMyActorRef extends Actor {
   override def receive: Receive = {
-    case "printit" ⇒ val secondRef = context.actorOf(Props.empty, "second-actor")
+    case "printit" ⇒
+      val secondRef = context.actorOf(Props.empty, "second-actor")
       println(s"Second: $secondRef")
   }
 }
