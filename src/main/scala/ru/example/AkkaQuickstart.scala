@@ -18,7 +18,6 @@ object AkkaQuickstart extends App {
     system.actorOf(Greeter.props("Hello", printer), "helloGreeter")
   val goodDayGreeter: ActorRef =
     system.actorOf(Greeter.props("Good day", printer), "goodDayGreeter")
-  //#create-actors
 
   //#main-send-messages
   howdyGreeter ! WhoToGreet("Akka")
@@ -35,43 +34,37 @@ object AkkaQuickstart extends App {
 }
 
 object Greeter {
-  //#greeter-messages
   def props(message: String, printerActor: ActorRef): Props =
     Props(new Greeter(message, printerActor))
-  //#greeter-messages
   final case class WhoToGreet(who: String)
   case object Greet
 }
 
-//#greeter-actor
 class Greeter(message: String, printerActor: ActorRef) extends Actor {
   import ru.example.Greeter._
   import ru.example.Printer._
 
   var greeting = ""
 
-  def receive = {
+  def receive: PartialFunction[Any, Unit] = {
     case WhoToGreet(who) =>
       greeting = message + ", " + who
     case Greet =>
       //#greeter-send-message
       printerActor ! Greeting(greeting)
-    //#greeter-send-message
   }
 }
 
 object Printer {
   //#printer-messages
   def props: Props = Props[Printer]
-  //#printer-messages
   final case class Greeting(greeting: String)
 }
 
-//#printer-actor
 class Printer extends Actor with ActorLogging {
   import ru.example.Printer._
 
-  def receive = {
+  def receive: PartialFunction[Any, Unit] = {
     case Greeting(greeting) =>
       log.info("Greeting received (from " + sender() + "): " + greeting)
   }

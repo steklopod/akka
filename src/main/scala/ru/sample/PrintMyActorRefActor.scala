@@ -1,7 +1,6 @@
 package ru.sample
 
-
-import akka.actor.{ Actor, Props, ActorSystem }
+import akka.actor.{Actor, Props, ActorSystem}
 import scala.io.StdIn
 
 class PrintMyActorRefActor extends Actor {
