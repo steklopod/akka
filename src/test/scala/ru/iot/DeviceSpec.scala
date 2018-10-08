@@ -2,7 +2,6 @@ package ru.iot
 import akka.testkit.TestProbe
 import ru.testkit.AkkaSpec
 
-
 class DeviceSpec extends AkkaSpec {
   "Device actor" must {
     "reply with empty reading if no temperature is known" in {

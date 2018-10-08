@@ -19,11 +19,11 @@ libraryDependencies ++= Seq(
   "org.junit.platform"     % "junit-platform-engine"     % junitPlatform % Test,
   "org.junit.platform"     % "junit-platform-runner"     % junitPlatform % Test,
   "com.geirsson"           %% "scalafmt-core"            % "1.5.1",
-  "org.scalatest"          %% "scalatest"                % "3.2.0-SNAP10",
+  "org.scalatest"          %% "scalatest"                % "3.2.0-SNAP10" % Test,
   "org.scalacheck"         %% "scalacheck"               % "1.13.5" % Test,
   "com.typesafe.akka"      %% "akka-actor"               % akkaVersion,
   "com.typesafe.akka"      %% "akka-slf4j"               % akkaVersion,
-  "com.typesafe.akka"      %% "akka-testkit"             % akkaVersion
+  "com.typesafe.akka"      %% "akka-testkit"             % akkaVersion % Test
 )
 
 resolvers ++= Seq(
@@ -32,6 +32,3 @@ resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Classpaths.typesafeReleases
 )
-
-//testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework")
-//parallelExecution in Test := false
