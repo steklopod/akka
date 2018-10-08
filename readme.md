@@ -14,7 +14,7 @@
 
 1. [Почему современным системам нужна новая модель программирования](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/why-modern-systems-need-anew-programming-model.md)
 
-2. [Как модель актера отвечает потребностям современных распределенных систем](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/how-the-actor-model-meets-the-needs-of-modern-distributed-systems.md)
+2. [Как модель актора отвечает потребностям современных распределенных систем](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/how-the-actor-model-meets-the-needs-of-modern-distributed-systems.md)
 
 3. [Обзор библиотек и модулей Akka](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/overview-of-akka-libraries-and-modules.md)
 
