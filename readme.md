@@ -18,7 +18,9 @@
 4. [Быстрый старт с Акка](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/akka-quicksrart.md)
 5. [Введение в пример](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/introduction-to-the-example.md)
 6. [1. Архитектура акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/part1-actor-architecture.md)
+
 ⋅⋅⋅ [2. Создание первого актора](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/creating-the-first-actor.md)
+
 ⋅⋅⋅ [3. Работа с устройствами](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-actors.md)
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
