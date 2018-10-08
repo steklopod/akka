@@ -1,4 +1,4 @@
-package ru.examples
+package ru
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 
@@ -33,8 +33,8 @@ object Greeter {
 }
 
 class Greeter(message: String, printerActor: ActorRef) extends Actor {
-  import ru.examples.Greeter._
-  import ru.examples.Printer._
+  import Greeter._
+  import Printer._
 
   var greeting = ""
 
@@ -50,7 +50,7 @@ object Printer {
 }
 
 class Printer extends Actor with ActorLogging {
-  import ru.examples.Printer._
+  import Printer._
 
   def receive: PartialFunction[Any, Unit] = {
     case Greeting(greeting) => log.info("Greeting received (from " + sender() + "): " + greeting)

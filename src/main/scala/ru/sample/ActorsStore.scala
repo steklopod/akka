@@ -1,4 +1,4 @@
-package ru.examples
+package ru.sample
 
 import akka.actor.{Actor, ActorRef, Props}
 
