@@ -3,7 +3,7 @@ name := "Akka"
 version := "0.2"
 
 scalaVersion := "2.12.6"
-val akkaVersion   = "2.5.16"
+val akkaVersion   = "2.5.17"
 val junitJupiter  = "5.2.0"
 val junitPlatform = "1.2.0"
 val slf4j         = "1.8.0-beta2"
@@ -19,11 +19,11 @@ libraryDependencies ++= Seq(
   "org.junit.platform"     % "junit-platform-engine"     % junitPlatform % Test,
   "org.junit.platform"     % "junit-platform-runner"     % junitPlatform % Test,
   "com.geirsson"           %% "scalafmt-core"            % "1.5.1",
-  "org.scalatest"          %% "scalatest"                % "3.2.0-SNAP10" % Test,
+  "org.scalatest"          %% "scalatest"                % "3.2.0-SNAP10",
   "org.scalacheck"         %% "scalacheck"               % "1.13.5" % Test,
   "com.typesafe.akka"      %% "akka-actor"               % akkaVersion,
   "com.typesafe.akka"      %% "akka-slf4j"               % akkaVersion,
-  "com.typesafe.akka"      %% "akka-testkit"             % akkaVersion % Test
+  "com.typesafe.akka"      %% "akka-testkit"             % akkaVersion
 )
 
 resolvers ++= Seq(

@@ -1,13 +1,10 @@
 package ru.iot
+import akka.testkit.TestProbe
+import ru.testkit.AkkaSpec
 
-import akka.testkit._
 
-//TODO -
 class DeviceSpec extends AkkaSpec {
-
   "Device actor" must {
-
-    //#device-read-test
     "reply with empty reading if no temperature is known" in {
       val probe = TestProbe()
       val deviceActor = system.actorOf(Device.props("group", "device"))
@@ -17,9 +14,7 @@ class DeviceSpec extends AkkaSpec {
       response.requestId should ===(42)
       response.value should ===(None)
     }
-    //#device-read-test
 
-    //#device-write-read-test
     "reply with latest temperature reading" in {
       val probe = TestProbe()
       val deviceActor = system.actorOf(Device.props("group", "device"))
@@ -40,7 +35,6 @@ class DeviceSpec extends AkkaSpec {
       response2.requestId should ===(4)
       response2.value should ===(Some(55.0))
     }
-    //#device-write-read-test
 
   }
 
