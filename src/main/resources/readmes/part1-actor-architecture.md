@@ -126,7 +126,7 @@ object ActorHierarchyExperiments extends App {
  практикой останавливать произвольных участников таким образом**_: попробуйте отправить им сообщение `PoisonPill` или 
  пользовательское сообщение остановки.
  
- API-интерфейс Akka предоставляет много крючков жизненного цикла, которые вы можете переопределить в реализации актора. 
+ API-интерфейс Akka предоставляет много хуков жизненного цикла, которые вы можете переопределить в реализации актора. 
  Наиболее часто используются **`preStart()`** и **`postStop()`**.
  
  * `preStart()` вызывается после того, как актор начал, но прежде чем он обработает свое первое сообщение;
@@ -225,7 +225,7 @@ class StartStopActor2 extends Actor {
     supervised actor started
     [ERROR] [09/29/2018 10:47:14.150] [testSystem-akka.actor.default-dispatcher-2] [akka://testSystem/user/supervising-actor/supervised-actor] I failed!
     java.lang.Exception: I failed!
-            at tutorial_1.SupervisedActor$$anonfun$receive$4.applyOrElse(ActorHierarchyExperiments.scala:57)
+            at example.SupervisedActor$$anonfun$receive$4.applyOrElse(ActorHierarchyExperiments.scala:57)
             ...
 ```
 

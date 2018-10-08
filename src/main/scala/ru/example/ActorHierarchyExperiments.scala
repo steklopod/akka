@@ -22,7 +22,7 @@ object ActorHierarchyExperiments extends App {
   finally first ! "stop"
 
   //  first ! "stop"
-  //  supervisingActor ! "failChild"
+//  supervisingActor ! "failChild"
 }
 
 class PrintMyActorRef extends Actor {
