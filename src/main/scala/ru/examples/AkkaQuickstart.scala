@@ -1,11 +1,10 @@
-package ru.example
+package ru.examples
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
 
 object AkkaQuickstart extends App {
   import Greeter._
 
-  // Create the 'helloAkka' actor system
   val system: ActorSystem = ActorSystem("helloAkka")
 
   val printer: ActorRef        = system.actorOf(Printer.props, "printerActor")
@@ -34,8 +33,8 @@ object Greeter {
 }
 
 class Greeter(message: String, printerActor: ActorRef) extends Actor {
-  import ru.example.Greeter._
-  import ru.example.Printer._
+  import ru.examples.Greeter._
+  import ru.examples.Printer._
 
   var greeting = ""
 
@@ -51,7 +50,7 @@ object Printer {
 }
 
 class Printer extends Actor with ActorLogging {
-  import ru.example.Printer._
+  import ru.examples.Printer._
 
   def receive: PartialFunction[Any, Unit] = {
     case Greeting(greeting) => log.info("Greeting received (from " + sender() + "): " + greeting)

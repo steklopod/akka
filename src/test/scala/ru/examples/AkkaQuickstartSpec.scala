@@ -1,4 +1,4 @@
-package ru.example
+package ru.examples
 
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike, Matchers}
 import akka.actor.ActorSystem

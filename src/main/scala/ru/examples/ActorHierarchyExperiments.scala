@@ -1,4 +1,4 @@
-package ru.example
+package ru.examples
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import org.slf4j.{Logger, LoggerFactory}
@@ -10,9 +10,9 @@ object ActorHierarchyExperiments extends App {
 
   val system = ActorSystem("testSystem")
 
-  val firstRef = system.actorOf(Props[PrintMyActorRef], "first-actor")
-  println(s"First: $firstRef")
-  firstRef ! "printit"
+//  val firstRef = system.actorOf(Props[PrintMyActorRef], "first-actor")
+//  println(s"First: $firstRef")
+//  firstRef ! "printit"
 
   val first            = system.actorOf(Props[StartStopActor1], "first")
   val supervisingActor = system.actorOf(Props[SupervisingActor], "supervising-actor")
@@ -42,7 +42,7 @@ class StartStopActor1 extends Actor {
     log.info("first started")
     context.actorOf(Props[StartStopActor2], "second")
   }
-  override def postStop(): Unit = println("first stopped")
+  override def postStop(): Unit = log.info("first stopped")
 
   override def receive: Receive = {
     case "stop" ⇒ context.stop(self)
