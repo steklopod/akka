@@ -58,32 +58,32 @@
  
  >класс PrintMyActorRefActor:
  
- ```scala
-    package ru.sample
-    
-    import akka.actor.{ Actor, Props, ActorSystem }
-    import scala.io.StdIn
-    
-    class PrintMyActorRefActor extends Actor {
-      override def receive: Receive = {
-        case "printit" ⇒
-          val secondRef = context.actorOf(Props.empty, "second-actor")
-          println(s"Second: $secondRef")
-      }
-    }
-    
-    object ActorHierarchyExperiments extends App {
-      val system = ActorSystem("testSystem")
-    
-      val firstRef = system.actorOf(Props[PrintMyActorRefActor], "first-actor")
-      println(s"First: $firstRef")
-      firstRef ! "printit"
-    
-      println(">>> Press ENTER to exit <<<")
-      try StdIn.readLine()
-      finally system.terminate()
-    }
- ```
+```scala
+package ru.sample
+
+import akka.actor.{ Actor, Props, ActorSystem }
+import scala.io.StdIn
+
+class PrintMyActorRefActor extends Actor {
+  override def receive: Receive = {
+    case "printit" ⇒
+      val secondRef = context.actorOf(Props.empty, "second-actor")
+      println(s"Second: $secondRef")
+  }
+}
+
+object ActorHierarchyExperiments extends App {
+  val system = ActorSystem("testSystem")
+
+  val firstRef = system.actorOf(Props[PrintMyActorRefActor], "first-actor")
+  println(s"First: $firstRef")
+  firstRef ! "printit"
+
+  println(">>> Press ENTER to exit <<<")
+  try StdIn.readLine()
+  finally system.terminate()
+}
+```
  
 Обратите внимание на то, как сообщение просило первого актора выполнить свою работу. Мы отправили сообщение, используя 
 ссылку родителя: `firstRef! "Printit"`. Когда код выполняется, вывод включает ссылки для первого актора и ребенка, 
@@ -136,24 +136,24 @@
  Давайте используем перехваты жизненного цикла `preStart()` и `postStop()` в простом эксперименте, чтобы наблюдать за 
  поведением, когда мы останавливаем актора. Во-первых, добавьте в свой проект следующие 2 акторских класса:
  
- ```scala
-    class StartStopActor1 extends Actor {
-      override def preStart(): Unit = {
-        println("first started")
-        context.actorOf(Props[StartStopActor2], "second")
-      }
-      override def postStop(): Unit = println("first stopped")
-    
-      override def receive: Receive = { case "stop" ⇒ context.stop(self)  }
-    }
-    
-    class StartStopActor2 extends Actor {
-      override def preStart(): Unit = println("second started")
-      override def postStop(): Unit = println("second stopped")
-    
-      // Actor.emptyBehavior is a useful placeholder when we don't want to handle any messages in the actor.
-      override def receive: Receive = Actor.emptyBehavior
-    }
+```scala
+class StartStopActor1 extends Actor {
+  override def preStart(): Unit = {
+    println("first started")
+    context.actorOf(Props[StartStopActor2], "second")
+  }
+  override def postStop(): Unit = println("first stopped")
+
+  override def receive: Receive = { case "stop" ⇒ context.stop(self)  }
+}
+
+class StartStopActor2 extends Actor {
+  override def preStart(): Unit = println("second started")
+  override def postStop(): Unit = println("second stopped")
+
+  // Actor.emptyBehavior is a useful placeholder when we don't want to handle any messages in the actor.
+  override def receive: Receive = Actor.emptyBehavior
+}
  ```
  
 И создайте `main` класс, как показано выше, чтобы запустить акторы, а затем отправить им сообщение `stop`:
@@ -162,7 +162,84 @@
     val first = system.actorOf(Props[StartStopActor1], "first")
     first ! "stop"
 ```
-  
+
+Вы можете снова использовать `sbt` для запуска этой программы. Результат должен выглядеть следующим образом:
+
+```sbtshell
+    first started
+    second started
+    second stopped
+    first stopped
+```
+
+Когда мы сначала остановили актора, он остановил своего дочернего актора, во-вторых, прежде чем остановиться. Это 
+упорядочение строгое, все перехваты `postStop()` дочерних элементов вызываются до вызова `postStop()` для родителя.
+
+Раздел [Actor Lifecycle](https://doc.akka.io/docs/akka/current/actors.html#actor-lifecycle) справочного руководства Akka 
+содержит подробную информацию о полном списке хуков жизненного цикла акторов.
+
+## Обработка ошибок
+
+Родители и дети связаны на протяжении всего жизненного цикла. Всякий раз, когда актор терпит неудачу, он временно 
+приостанавливается. Как упоминалось ранее, информация об отказе распространяется на родителя, которая затем решает, 
+как обрабатывать исключение, вызванное дочерним актором. Таким образом, родители выступают в качестве надзирателей для 
+своих детей. Стратегия супервизора по умолчанию - остановить и перезагрузить ребенка. Если вы не измените 
+стратегию по умолчанию, все сбои приведут к перезапуску.
+
+Давайте рассмотрим стратегию по умолчанию в простом эксперименте. Добавьте в свой проект следующие классы:
+
+```scala
+    class SupervisingActor extends Actor {
+      val child = context.actorOf(Props[SupervisedActor], "supervised-actor")
+    
+      override def receive: Receive = {
+        case "failChild" ⇒ child ! "fail"
+      }
+    }
+    
+    class SupervisedActor extends Actor {
+      override def preStart(): Unit = println("supervised actor started")
+      override def postStop(): Unit = println("supervised actor stopped")
+    
+      override def receive: Receive = {
+        case "fail" ⇒
+          println("supervised actor fails now")
+          throw new Exception("I failed!")
+      }
+    }
+```
+
+И зупустите это:
+
+```scala
+    val supervisingActor = system.actorOf(Props[SupervisingActor], "supervising-actor")
+    supervisingActor ! "failChild"
+```
+
+Вы должны увидеть результат, похожий на следующий:
+
+```scala
+    supervised actor started
+    supervised actor fails now
+    supervised actor stopped
+    supervised actor started
+    [ERROR] [09/29/2018 10:47:14.150] [testSystem-akka.actor.default-dispatcher-2] [akka://testSystem/user/supervising-actor/supervised-actor] I failed!
+    java.lang.Exception: I failed!
+            at tutorial_1.SupervisedActor$$anonfun$receive$4.applyOrElse(ActorHierarchyExperiments.scala:57)
+            ...
+```
+
+Мы видим, что после провала контролируемый актер прекращается и сразу же перезапускается. Мы также видим запись в журнале,
+ в которой сообщается об исключении, которое было обработано, в данном случае, нашем тестовом исключении. В этом примере 
+ мы использовали крючки `preStart()` и `postStop()`, которые по умолчанию будут вызываться после и перед перезапуском, 
+ поэтому мы не можем отличить внутри актера от того, был ли он запущен в первый раз или перезапущен. Обычно это правильно, 
+ цель перезапуска заключается в том, чтобы установить актера в хорошо известном состоянии, что обычно означает чистую 
+ начальную стадию. Однако на самом деле происходит то, что вызываются методы `preRestart()` и `postRestart()`, которые, 
+ если не переопределены, по умолчанию делегируют `postStop()` и `preStart()` соответственно. Вы можете поэкспериментировать 
+ с переопределением этих дополнительных методов и посмотреть, как изменяется результат.
+
+Для нетерпеливых мы также рекомендуем посмотреть [справочную страницу контроля](https://doc.akka.io/docs/akka/current/general/supervision.html).
+
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
 
