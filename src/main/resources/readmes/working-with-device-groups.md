@@ -117,7 +117,7 @@
 Предположим, что идентификатор отправителя регистрационного сообщения сохраняется в верхних слоях. В следующем разделе 
 мы покажем, как это может быть достигнуто.
 
-Код регистрации актера устройства выглядит следующим образом. Измените свой пример, чтобы он соответствовал.
+Код регистрации актора устройства выглядит следующим образом. Измените свой пример, чтобы он соответствовал.
 
 ```scala
     object Device {
@@ -158,8 +158,7 @@
     }
 ```
 
->Заметка
-Мы использовали функцию сопоставления шаблонов scala, где мы можем проверить, соответствует ли определенное поле 
+>Мы использовали функцию сопоставления шаблонов scala, где мы можем проверить, соответствует ли определенное поле 
 ожидаемому значению. С помощью брекетинга переменных с обратными циклами, например `variable`, шаблон будет соответствовать 
 только в том случае, если он содержит значение переменной в этой позиции.
 
@@ -188,13 +187,117 @@
     }
 ```
 
->Заметка
-Мы использовали вспомогательный метод `expectNoMsg()` из `TestProbe`. Это утверждение ожидает до определенного предела 
+>Мы использовали вспомогательный метод `expectNoMsg()` из `TestProbe`. Это утверждение ожидает до определенного предела 
 времени и терпит неудачу, если оно получает какие-либо сообщения в течение этого периода. Если в течение периода ожидания 
 не принимаются сообщения, это утверждение проходит. Обычно рекомендуется сохранять эти таймауты низкими (но не слишком низкими),
  потому что они добавляют значительное время выполнения теста.
  
+### Добавление поддержки регистрации участникам группы устройств
+
+Мы закончили с поддержкой регистрации на уровне устройства, теперь мы должны реализовать его на уровне группы. У участника 
+группы больше работы, когда дело касается регистрации, в том числе:
+
+* Обработка запроса на регистрацию путем пересылки его существующему игроку устройства или путем создания нового участника и пересылки сообщения.
+* Отслеживание того, какие субъекты устройства существуют в группе и удаление их из группы, когда они остановлены.
+
+#### Обработка запроса на регистрацию
+
+Актор группы устройств должен либо переслать запрос существующему ребенку, либо создать его. Чтобы найти дочерних субъектов
+ по идентификаторам своих устройств, мы будем использовать `Map[String, ActorRef]`.
+
+Мы также хотим сохранить идентификатор оригинального отправителя запроса, чтобы наш актор устройства мог напрямую ответить.
+ Это возможно, используя `forward` вместо `!` оператор. Единственное различие между ними заключается в том, что `forward` хранит 
+ оригинального отправителя `!` устанавливает отправителя как текущего участника. Так же, как с нашим игроком на устройстве, 
+ мы гарантируем, что мы не будем реагировать на неправильные идентификаторы групп. Добавьте в исходный файл следующее:
  
+```scala
+ object DeviceGroup {
+   def props(groupId: String): Props = Props(new DeviceGroup(groupId))
+ }
+ 
+ class DeviceGroup(groupId: String) extends Actor with ActorLogging {
+   var deviceIdToActor = Map.empty[String, ActorRef]
+ 
+   override def preStart(): Unit = log.info("DeviceGroup {} started", groupId)
+   override def postStop(): Unit = log.info("DeviceGroup {} stopped", groupId)
+ 
+   override def receive: Receive = {
+     case trackMsg @ RequestTrackDevice(`groupId`, _) ⇒
+       deviceIdToActor.get(trackMsg.deviceId) match {
+         case Some(deviceActor) ⇒
+           deviceActor forward trackMsg
+         case None ⇒
+           log.info("Creating device actor for {}", trackMsg.deviceId)
+           val deviceActor = context.actorOf(Device.props(groupId, trackMsg.deviceId), s"device-${trackMsg.deviceId}")
+           deviceIdToActor += trackMsg.deviceId -> deviceActor
+           deviceActor forward trackMsg
+       }
+ 
+     case RequestTrackDevice(groupId, deviceId) ⇒
+       log.warning(
+         "Ignoring TrackDevice request for {}. This actor is responsible for {}.",
+         groupId, this.groupId
+       )
+   }
+ }
+```
+
+Так же, как мы это сделали с устройством, мы тестируем эту новую функциональность. Мы также проверяем, что акторы, 
+возвращенные для двух разных идентификаторов, фактически различны, и мы также пытаемся записать показания температуры для 
+каждого из устройств, чтобы увидеть, реагируют ли участники.
+
+```scala
+    "be able to register a device actor" in {
+      val probe = TestProbe()
+      val groupActor = system.actorOf(DeviceGroup.props("group"))
+    
+      groupActor.tell(DeviceManager.RequestTrackDevice("group", "device1"), probe.ref)
+      probe.expectMsg(DeviceManager.DeviceRegistered)
+      val deviceActor1 = probe.lastSender
+    
+      groupActor.tell(DeviceManager.RequestTrackDevice("group", "device2"), probe.ref)
+      probe.expectMsg(DeviceManager.DeviceRegistered)
+      val deviceActor2 = probe.lastSender
+      deviceActor1 should !==(deviceActor2)
+    
+      // Check that the device actors are working
+      deviceActor1.tell(Device.RecordTemperature(requestId = 0, 1.0), probe.ref)
+      probe.expectMsg(Device.TemperatureRecorded(requestId = 0))
+      deviceActor2.tell(Device.RecordTemperature(requestId = 1, 2.0), probe.ref)
+      probe.expectMsg(Device.TemperatureRecorded(requestId = 1))
+    }
+    
+    "ignore requests for wrong groupId" in {
+      val probe = TestProbe()
+      val groupActor = system.actorOf(DeviceGroup.props("group"))
+    
+      groupActor.tell(DeviceManager.RequestTrackDevice("wrongGroup", "device1"), probe.ref)
+      probe.expectNoMsg(500.milliseconds)
+    }
+```
+
+Если для запроса на регистрацию уже существует действующий субъект, мы хотели бы использовать существующего актера вместо 
+нового. Мы еще не тестировали это, поэтому нам нужно исправить это:
+
+
+```scala
+   "return same actor for same deviceId" in {
+     val probe = TestProbe()
+     val groupActor = system.actorOf(DeviceGroup.props("group"))
+   
+     groupActor.tell(DeviceManager.RequestTrackDevice("group", "device1"), probe.ref)
+     probe.expectMsg(DeviceManager.DeviceRegistered)
+     val deviceActor1 = probe.lastSender
+   
+     groupActor.tell(DeviceManager.RequestTrackDevice("group", "device1"), probe.ref)
+     probe.expectMsg(DeviceManager.DeviceRegistered)
+     val deviceActor2 = probe.lastSender
+   
+     deviceActor1 should ===(deviceActor2)
+   } 
+```
+
+
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
 
