@@ -108,6 +108,93 @@
 нашем случае мы извлекаем выгоду из подхода «снизу вверх», поскольку он позволяет нам немедленно писать тесты для новых 
 функций без издевательства над деталями, которые нам понадобятся для строить позже.
 
+### Добавление поддержки регистрации участникам устройства
+
+В нижней части нашей иерархии находятся элементы устройства. Их работа в процессе регистрации проста: ответать на запрос
+ регистрации с подтверждением отправителю. Также разумно добавить защиту от запросов, которые содержат несогласованную 
+ группу или идентификатор устройства.
+
+Предположим, что идентификатор отправителя регистрационного сообщения сохраняется в верхних слоях. В следующем разделе 
+мы покажем, как это может быть достигнуто.
+
+Код регистрации актера устройства выглядит следующим образом. Измените свой пример, чтобы он соответствовал.
+
+```scala
+    object Device {
+      def props(groupId: String, deviceId: String): Props = Props(new Device(groupId, deviceId))
+    
+      final case class RecordTemperature(requestId: Long, value: Double)
+      final case class TemperatureRecorded(requestId: Long)
+      final case class ReadTemperature(requestId: Long)
+      final case class RespondTemperature(requestId: Long, value: Option[Double])
+    }
+    
+    class Device(groupId: String, deviceId: String) extends Actor with ActorLogging {
+      import Device._
+    
+      var lastTemperatureReading: Option[Double] = None
+    
+      override def preStart(): Unit = log.info("Device actor {}-{} started", groupId, deviceId)
+      override def postStop(): Unit = log.info("Device actor {}-{} stopped", groupId, deviceId)
+    
+      override def receive: Receive = {
+        case DeviceManager.RequestTrackDevice(`groupId`, `deviceId`) ⇒
+          sender() ! DeviceManager.DeviceRegistered
+    
+        case DeviceManager.RequestTrackDevice(groupId, deviceId) ⇒
+          log.warning(
+            "Ignoring TrackDevice request for {}-{}.This actor is responsible for {}-{}.",
+            groupId, deviceId, this.groupId, this.deviceId
+          )
+    
+        case RecordTemperature(id, value) ⇒
+          log.info("Recorded temperature reading {} with {}", value, id)
+          lastTemperatureReading = Some(value)
+          sender() ! TemperatureRecorded(id)
+    
+        case ReadTemperature(id) ⇒
+          sender() ! RespondTemperature(id, lastTemperatureReading)
+      }
+    }
+```
+
+>Заметка
+Мы использовали функцию сопоставления шаблонов scala, где мы можем проверить, соответствует ли определенное поле 
+ожидаемому значению. С помощью брекетинга переменных с обратными циклами, например `variable`, шаблон будет соответствовать 
+только в том случае, если он содержит значение переменной в этой позиции.
+
+Теперь мы можем написать два новых тестовых примера, один из которых - успешная регистрация, а другой - проверку, 
+когда идентификаторы не совпадают:
+
+```scala
+    "reply to registration requests" in {
+      val probe = TestProbe()
+      val deviceActor = system.actorOf(Device.props("group", "device"))
+    
+      deviceActor.tell(DeviceManager.RequestTrackDevice("group", "device"), probe.ref)
+      probe.expectMsg(DeviceManager.DeviceRegistered)
+      probe.lastSender should ===(deviceActor)
+    }
+    
+    "ignore wrong registration requests" in {
+      val probe = TestProbe()
+      val deviceActor = system.actorOf(Device.props("group", "device"))
+    
+      deviceActor.tell(DeviceManager.RequestTrackDevice("wrongGroup", "device"), probe.ref)
+      probe.expectNoMsg(500.milliseconds)
+    
+      deviceActor.tell(DeviceManager.RequestTrackDevice("group", "Wrongdevice"), probe.ref)
+      probe.expectNoMsg(500.milliseconds)
+    }
+```
+
+>Заметка
+Мы использовали вспомогательный метод `expectNoMsg()` из `TestProbe`. Это утверждение ожидает до определенного предела 
+времени и терпит неудачу, если оно получает какие-либо сообщения в течение этого периода. Если в течение периода ожидания 
+не принимаются сообщения, это утверждение проходит. Обычно рекомендуется сохранять эти таймауты низкими (но не слишком низкими),
+ потому что они добавляют значительное время выполнения теста.
+ 
+ 
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
 
