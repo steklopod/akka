@@ -21,8 +21,7 @@ class DeviceGroup(groupId: String) extends Actor with ActorLogging {
   override def receive: Receive = {
     case trackMsg @ RequestTrackDevice(`groupId`, _) ⇒
       deviceIdToActor.get(trackMsg.deviceId) match {
-        case Some(deviceActor) ⇒
-          deviceActor forward trackMsg
+        case Some(deviceActor) ⇒ deviceActor forward trackMsg
         case None ⇒
           log.info("Creating device actor for {}", trackMsg.deviceId)
           val deviceActor = context.actorOf(Device.props(groupId, trackMsg.deviceId), s"device-${trackMsg.deviceId}")
