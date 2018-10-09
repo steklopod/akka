@@ -7,6 +7,7 @@ addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.5.1")
 //scalafmtSbt: все *.sbt-файлы
 //scalafmtOnly: только один файл
 
+
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Resolver.sbtPluginRepo("snapshots")

@@ -23,9 +23,7 @@ object ActorHierarchyExperiments extends App {
 
   println(">>> Press ENTER to exit <<<")
   try StdIn.readLine()
-  finally first ! "stop";  system.terminate()
-
-
+  finally first ! "stop"; system.terminate()
   //  first ! "stop"
   //  supervisingActor ! "failChild"
 }
