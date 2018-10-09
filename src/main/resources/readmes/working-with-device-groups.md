@@ -332,7 +332,6 @@ Akka предоставляет функцию `Death Watch`, которая п�
       var actorToDeviceId = Map.empty[ActorRef, String]
     
       override def preStart(): Unit = log.info("DeviceGroup {} started", groupId)
-    
       override def postStop(): Unit = log.info("DeviceGroup {} stopped", groupId)
     
       override def receive: Receive = {
@@ -365,7 +364,7 @@ Akka предоставляет функцию `Death Watch`, которая п�
     }
 ```
 
-До сих пор у нас нет средств для того, чтобы узнать, какие устройства отслеживает актер группы устройств, и поэтому мы 
+До сих пор у нас нет средств для того, чтобы узнать, какие устройства отслеживает актор группы устройств, и поэтому мы 
 еще не можем проверить нашу новую функциональность. Чтобы сделать его проверяемым, мы добавляем новую возможность запроса 
 (сообщение `RequestDeviceList(requestId: Long)`), в котором перечислены активные идентификаторы устройств:
 
@@ -382,7 +381,6 @@ Akka предоставляет функцию `Death Watch`, которая п�
       var actorToDeviceId = Map.empty[ActorRef, String]
     
       override def preStart(): Unit = log.info("DeviceGroup {} started", groupId)
-    
       override def postStop(): Unit = log.info("DeviceGroup {} stopped", groupId)
     
       override def receive: Receive = {
@@ -418,7 +416,121 @@ Akka предоставляет функцию `Death Watch`, которая п�
     }
 ```
 
+Мы почти готовы проверить удаление устройств. Но нам все еще нужны следующие возможности:
 
+* Чтобы остановить актора устройства из нашего тестового примера. С внешней стороны любой актор может быть остановлен, 
+отправив специальное встроенное сообщение `PoisonPill`, которое инструктирует актора остановиться.
+* Чтобы получать уведомление после остановки устройства. Для этого мы также можем использовать средство `Death Watch`
+ для этой цели. `TestProbe` имеет два сообщения, которые мы можем легко использовать, `watch()`, чтобы наблюдать за 
+ конкретным актором, и ожидать, что он будет уверен, что наблюдаемый актор был прекращен.
+
+Теперь мы добавим еще два теста. Во-первых, мы проверяем, что мы вернем список правильных идентификаторов, как только 
+мы добавим несколько устройств. Второй тестовый пример удостоверяет, что идентификатор устройства должным образом удален 
+после остановки устройства:
+
+```scala
+    "be able to list active devices" in {
+      val probe = TestProbe()
+      val groupActor = system.actorOf(DeviceGroup.props("group"))
+    
+      groupActor.tell(DeviceManager.RequestTrackDevice("group", "device1"), probe.ref)
+      probe.expectMsg(DeviceManager.DeviceRegistered)
+    
+      groupActor.tell(DeviceManager.RequestTrackDevice("group", "device2"), probe.ref)
+      probe.expectMsg(DeviceManager.DeviceRegistered)
+    
+      groupActor.tell(DeviceGroup.RequestDeviceList(requestId = 0), probe.ref)
+      probe.expectMsg(DeviceGroup.ReplyDeviceList(requestId = 0, Set("device1", "device2")))
+    }
+    
+    "be able to list active devices after one shuts down" in {
+      val probe = TestProbe()
+      val groupActor = system.actorOf(DeviceGroup.props("group"))
+    
+      groupActor.tell(DeviceManager.RequestTrackDevice("group", "device1"), probe.ref)
+      probe.expectMsg(DeviceManager.DeviceRegistered)
+      val toShutDown = probe.lastSender
+    
+      groupActor.tell(DeviceManager.RequestTrackDevice("group", "device2"), probe.ref)
+      probe.expectMsg(DeviceManager.DeviceRegistered)
+    
+      groupActor.tell(DeviceGroup.RequestDeviceList(requestId = 0), probe.ref)
+      probe.expectMsg(DeviceGroup.ReplyDeviceList(requestId = 0, Set("device1", "device2")))
+    
+      probe.watch(toShutDown)
+      toShutDown ! PoisonPill
+      probe.expectTerminated(toShutDown)
+    
+      // using awaitAssert to retry because it might take longer for the groupActor
+      // to see the Terminated, that order is undefined
+      probe.awaitAssert {
+        groupActor.tell(DeviceGroup.RequestDeviceList(requestId = 1), probe.ref)
+        probe.expectMsg(DeviceGroup.ReplyDeviceList(requestId = 1, Set("device2")))
+      }
+    }
+```
+
+### Создание операторов диспетчера устройств
+
+Перейдя на следующий уровень в нашей иерархии, нам нужно создать точку входа для нашего компонента менеджера устройств в 
+исходном файле `DeviceManager`. Этот актор очень похож на актора группы устройств, но создает акторов группы устройств, 
+а не акторов устройства:
+
+```scala
+    object DeviceManager {
+      def props(): Props = Props(new DeviceManager)
+    
+      final case class RequestTrackDevice(groupId: String, deviceId: String)
+      case object DeviceRegistered
+    }
+    
+    class DeviceManager extends Actor with ActorLogging {
+      var groupIdToActor = Map.empty[String, ActorRef]
+      var actorToGroupId = Map.empty[ActorRef, String]
+    
+      override def preStart(): Unit = log.info("DeviceManager started")
+      override def postStop(): Unit = log.info("DeviceManager stopped")
+    
+      override def receive = {
+        case trackMsg @ RequestTrackDevice(groupId, _) ⇒
+          groupIdToActor.get(groupId) match {
+            case Some(ref) ⇒
+              ref forward trackMsg
+            case None ⇒
+              log.info("Creating device group actor for {}", groupId)
+              val groupActor = context.actorOf(DeviceGroup.props(groupId), "group-" + groupId)
+              context.watch(groupActor)
+              groupActor forward trackMsg
+              groupIdToActor += groupId -> groupActor
+              actorToGroupId += groupActor -> groupId
+          }
+    
+        case Terminated(groupActor) ⇒
+          val groupId = actorToGroupId(groupActor)
+          log.info("Device group actor for {} has been terminated", groupId)
+          actorToGroupId -= groupActor
+          groupIdToActor -= groupId
+    
+      }
+    
+    }
+```
+
+Мы оставляем тесты менеджера устройств в качестве упражнения для вас, так как он очень похож на те тесты, которые мы уже 
+писали для группового актора.
+
+### Что дальше?
+
+Теперь у нас есть иерархический компонент для регистрации и отслеживания устройств и записи измерений. Мы видели, как 
+реализовать различные типы шаблонов беседы, такие как:
+
+* `Request-respond` (для записи температуры)
+* `Delegate-respond` (для регистрации устройств)
+* `Create-watch-terminate` (для создания актора группы и устройства в качестве детей)
+
+В следующей главе мы расскажем о возможностях группового запроса, который установит новый шаблон разбора рассеяния. 
+В частности, мы реализуем функциональность, которая позволяет пользователям запрашивать статус всех устройств, принадлежащих 
+к группе.
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
 
