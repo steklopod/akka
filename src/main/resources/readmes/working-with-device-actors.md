@@ -207,14 +207,103 @@
 * В классе `Devic`e значение `lastTemperatureReading` изначально установлено на `None`, и актор будет сообщать об этом, 
 если запрашивается.
 
-### Тестирование актера
+### Тестирование актора
 
-Основываясь на простом актере выше, мы могли бы написать простой тест. В пакете `ru.iot` в тестовом дереве вашего проекта 
+Основываясь на простом акторе выше, мы могли бы написать простой тест. В пакете `ru.iot` в тестовом дереве вашего проекта 
 добавьте следующий код в файл `DeviceSpec.scala`. (Мы используем `ScalaTest`, но любые другие тестовые фрэймворки могут 
 использоваться с `Akka Testkit`).
 
-Вы можете запустить этот тест, выполнив тест в командной строке sbt.
+Вы можете запустить этот тест, выполнив тест в командной строке `sbt`.
 
+```scala
+    final case class RecordTemperature(value: Double)
+```
+
+Однако этот подход не учитывает, что отправитель сообщения о температуре записи никогда не может быть уверен, обработано 
+ли сообщение или нет. Мы видели, что Akka не гарантирует доставку этих сообщений и оставляет их в приложении для 
+предоставления уведомлений об успехах. В нашем случае мы хотели бы отправить подтверждение отправителю после того, как 
+мы обновили нашу последнюю запись температуры, например. `final case class TemperatureRecorded(requestId: Long)`.
+ Как и в случае температурных запросов и ответов, рекомендуется включить поле идентификатора, чтобы обеспечить максимальную гибкость.
+
+### Актор с сообщениями чтения и записи
+
+Соединяя протокол чтения и записи, актор устройства выглядит следующим образом:
+
+```scala
+    import akka.actor.{ Actor, ActorLogging, Props }
+    
+    object Device {
+      def props(groupId: String, deviceId: String): Props = Props(new Device(groupId, deviceId))
+    
+      final case class RecordTemperature(requestId: Long, value: Double)
+      final case class TemperatureRecorded(requestId: Long)
+    
+      final case class ReadTemperature(requestId: Long)
+      final case class RespondTemperature(requestId: Long, value: Option[Double])
+    }
+    
+    class Device(groupId: String, deviceId: String) extends Actor with ActorLogging {
+      import Device._
+      var lastTemperatureReading: Option[Double] = None
+    
+      override def preStart(): Unit = log.info("Device actor {}-{} started", groupId, deviceId)
+      override def postStop(): Unit = log.info("Device actor {}-{} stopped", groupId, deviceId)
+    
+      override def receive: Receive = {
+        case RecordTemperature(id, value) ⇒
+          log.info("Recorded temperature reading {} with {}", value, id)
+          lastTemperatureReading = Some(value)
+          sender() ! TemperatureRecorded(id)
+    
+        case ReadTemperature(id) ⇒
+          sender() ! RespondTemperature(id, lastTemperatureReading)
+      }
+    }
+```
+
+Мы также должны написать новый тестовый пример, одновременно используя функции чтения / запроса и записи / записи:
+
+```scala
+    import akka.testkit.TestProbe
+    import ru.testkit.AkkaSpec
+    
+    class DeviceSpec extends AkkaSpec {
+      "Device actor" must {
+        "reply with empty reading if no temperature is known" in {
+          val probe = TestProbe()
+          val deviceActor = system.actorOf(Device.props("group", "device"))
+    
+          deviceActor.tell(Device.ReadTemperature(requestId = 42), probe.ref)
+          val response = probe.expectMsgType[Device.RespondTemperature]
+          response.requestId should ===(42)
+          response.value should ===(None)
+        }
+    
+        "reply with latest temperature reading" in {
+          val probe = TestProbe()
+          val deviceActor = system.actorOf(Device.props("group", "device"))
+    
+          deviceActor.tell(Device.RecordTemperature(requestId = 1, 24.0), probe.ref)
+          probe.expectMsg(Device.TemperatureRecorded(requestId = 1))
+    
+          deviceActor.tell(Device.ReadTemperature(requestId = 2), probe.ref)
+          val response1 = probe.expectMsgType[Device.RespondTemperature]
+          response1.requestId should ===(2)
+          response1.value should ===(Some(24.0))
+    
+          deviceActor.tell(Device.RecordTemperature(requestId = 3, 55.0), probe.ref)
+          probe.expectMsg(Device.TemperatureRecorded(requestId = 3))
+    
+          deviceActor.tell(Device.ReadTemperature(requestId = 4), probe.ref)
+          val response2 = probe.expectMsgType[Device.RespondTemperature]
+          response2.requestId should ===(4)
+          response2.value should ===(Some(55.0))
+        }
+    
+      }
+   
+    }
+```
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
 

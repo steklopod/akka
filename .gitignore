@@ -35,6 +35,7 @@ project/plugins/project/
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 .idea/
+/.idea/
 
 # JIRA plugin
 atlassian-ide-plugin.xml
@@ -47,4 +48,3 @@ fabric.properties
 ### SBT template
 # Simple Build Tool
 # http://www.scala-sbt.org/release/docs/Getting-Started/Directories.html#configuring-version-control
-/.idea/

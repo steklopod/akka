@@ -8,7 +8,6 @@ object IotApp extends App {
   try {
     // Create top level supervisor
     val supervisor = system.actorOf(IotSupervisor.props(), "iot-supervisor")
-    // Exit the system after ENTER is pressed
     StdIn.readLine()
   } finally {
     system.terminate()

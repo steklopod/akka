@@ -1,4 +1,5 @@
 package ru.iot
+
 import akka.testkit.TestProbe
 import ru.testkit.AkkaSpec
 
