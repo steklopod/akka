@@ -2,6 +2,18 @@ package ru.packt.o2
 
 import akka.actor.{Actor, ActorSystem, Props}
 
+object Creation extends App {
+  val system = ActorSystem("creation")
+
+  val zeus = system.actorOf(Props[Zeus], "zeus")
+
+  zeus ! Zeus.StartMusic
+  zeus ! Zeus.StopMusic
+
+  system.terminate()
+}
+
+
 object Apollo {
   case object Play
   case object Stop
@@ -16,7 +28,6 @@ class Apollo extends Actor {
     case Play => println("Music Started .............")
     case Stop => println("Music Stopped .............")
   }
-
 }
 
 object Zeus {
@@ -32,25 +43,5 @@ class Zeus extends Actor {
       val apollo = context.actorOf(Apollo.props)
       apollo ! Apollo.Play
     case StopMusic => println("I don't want to stop music.")
-
   }
-}
-
-object Creation extends App {
-
-  // Create the 'creation' actor system
-  val system = ActorSystem("creation")
-
-  // Create the 'Zeus' actor
-  val zeus = system.actorOf(Props[Zeus], "zeus")
-
-  //send StartMusic Message to actor
-  zeus ! Zeus.StartMusic
-
-  // Send StopMusic Message to actor
-  zeus ! Zeus.StopMusic
-
-  //shutdown system
-  system.terminate()
-
 }
