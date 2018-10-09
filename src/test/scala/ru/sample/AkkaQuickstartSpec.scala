@@ -8,6 +8,7 @@ import ru.Greeter
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import ru.Greeter._
+import ru.Printer.Greeting
 
 class AkkaQuickstartSpec(_system: ActorSystem)
     extends TestKit(_system)

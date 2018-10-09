@@ -30,16 +30,16 @@ object Coroner { // FIXME: remove once going back to project dependencies
     * The result of this Awaitable will be `true` if it has been canceled.
     */
   trait WatchHandle extends Awaitable[Boolean] {
+
     /**
       * Will try to ensure that the Coroner has finished reporting.
       */
     def cancel(): Unit
   }
 
-  private class WatchHandleImpl(startAndStopDuration: FiniteDuration)
-    extends WatchHandle {
+  private class WatchHandleImpl(startAndStopDuration: FiniteDuration) extends WatchHandle {
     val cancelPromise = Promise[Boolean]
-    val startedLatch = new CountDownLatch(1)
+    val startedLatch  = new CountDownLatch(1)
     val finishedLatch = new CountDownLatch(1)
 
     def waitForStart(): Unit = {
@@ -76,14 +76,16 @@ object Coroner { // FIXME: remove once going back to project dependencies
     * If displayThreadCounts is set to true, then the Coroner will print thread counts during start
     * and stop.
     */
-  def watch(duration: FiniteDuration, reportTitle: String, out: PrintStream,
+  def watch(duration: FiniteDuration,
+            reportTitle: String,
+            out: PrintStream,
             startAndStopDuration: FiniteDuration = defaultStartAndStopDuration,
-            displayThreadCounts:  Boolean        = false): WatchHandle = {
+            displayThreadCounts: Boolean = false): WatchHandle = {
 
     val watchedHandle = new WatchHandleImpl(startAndStopDuration)
 
     def triggerReportIfOverdue(duration: Duration): Unit = {
-      val threadMx = ManagementFactory.getThreadMXBean()
+      val threadMx     = ManagementFactory.getThreadMXBean()
       val startThreads = threadMx.getThreadCount
       if (displayThreadCounts) {
         threadMx.resetPeakThreadCount()
@@ -94,7 +96,8 @@ object Coroner { // FIXME: remove once going back to project dependencies
         if (!Await.result(watchedHandle, duration)) {
           watchedHandle.expired()
           out.println(s"Coroner not cancelled after ${duration.toMillis}ms. Looking for signs of foul play...")
-          try printReport(reportTitle, out) catch {
+          try printReport(reportTitle, out)
+          catch {
             case NonFatal(ex) ⇒ {
               out.println("Error displaying Coroner's Report")
               ex.printStackTrace(out)
@@ -104,7 +107,8 @@ object Coroner { // FIXME: remove once going back to project dependencies
       } finally {
         if (displayThreadCounts) {
           val endThreads = threadMx.getThreadCount
-          out.println(s"Coroner Thread Count started at $startThreads, ended at $endThreads, peaked at ${threadMx.getPeakThreadCount} in $reportTitle")
+          out.println(
+            s"Coroner Thread Count started at $startThreads, ended at $endThreads, peaked at ${threadMx.getPeakThreadCount} in $reportTitle")
         }
         out.flush()
         watchedHandle.finished()
@@ -121,9 +125,9 @@ object Coroner { // FIXME: remove once going back to project dependencies
   def printReport(reportTitle: String, out: PrintStream): Unit = {
     import out.println
 
-    val osMx = ManagementFactory.getOperatingSystemMXBean()
-    val rtMx = ManagementFactory.getRuntimeMXBean()
-    val memMx = ManagementFactory.getMemoryMXBean()
+    val osMx     = ManagementFactory.getOperatingSystemMXBean()
+    val rtMx     = ManagementFactory.getRuntimeMXBean()
+    val memMx    = ManagementFactory.getMemoryMXBean()
     val threadMx = ManagementFactory.getThreadMXBean()
 
     println(s"""#Coroner's Report: $reportTitle
@@ -136,9 +140,7 @@ object Coroner { // FIXME: remove once going back to project dependencies
                #Non-heap usage: ${memMx.getNonHeapMemoryUsage()}""".stripMargin('#'))
 
     def dumpAllThreads: Seq[ThreadInfo] = {
-      threadMx.dumpAllThreads(
-        threadMx.isObjectMonitorUsageSupported,
-        threadMx.isSynchronizerUsageSupported)
+      threadMx.dumpAllThreads(threadMx.isObjectMonitorUsageSupported, threadMx.isSynchronizerUsageSupported)
     }
 
     def findDeadlockedThreads: (Seq[ThreadInfo], String) = {
@@ -251,8 +253,11 @@ trait WatchedByCoroner {
   @volatile private var coronerWatch: Coroner.WatchHandle = _
 
   final def startCoroner(): Unit = {
-    coronerWatch = Coroner.watch(expectedTestDuration.dilated, getClass.getName, System.err,
-      startAndStopDuration.dilated, displayThreadCounts)
+    coronerWatch = Coroner.watch(expectedTestDuration.dilated,
+                                 getClass.getName,
+                                 System.err,
+                                 startAndStopDuration.dilated,
+                                 displayThreadCounts)
   }
 
   final def stopCoroner(): Unit = {
