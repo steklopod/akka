@@ -276,7 +276,7 @@
     }
 ```
 
-Если для запроса на регистрацию уже существует действующий субъект, мы хотели бы использовать существующего актера вместо 
+Если для запроса на регистрацию уже существует действующий субъект, мы хотели бы использовать существующего актора вместо 
 нового. Мы еще не тестировали это, поэтому нам нужно исправить это:
 
 
@@ -295,6 +295,127 @@
    
      deviceActor1 should ===(deviceActor2)
    } 
+```
+
+#### Отслеживание участников устройства в группе
+
+До сих пор мы реализовали логику регистрации субъектов устройства в группе. Однако устройства приходят и уходят, поэтому 
+нам понадобится способ удалить участников устройств с `Map[String, ActorRef]`. Мы будем предполагать, что при удалении 
+устройства его соответствующий актор устройства останавливается. Наблюдение, как мы обсуждали ранее, обрабатывает только 
+сценарии ошибок - не изящная остановка. Поэтому нам нужно уведомить родителя, когда один из участников устройства остановлен.
+
+Akka предоставляет функцию `Death Watch`, которая позволяет актору смотреть другого актора и получать уведомление, если 
+другой актор остановлен. В отличие от наблюдения, просмотр не ограничивается отношениями между родителем и ребенком, 
+любой актор может наблюдать за любым другим актором, если он знает `ActorRef`. После остановки наблюдаемого актора 
+наблюдатель получает сообщение `Terminated(actorRef)`, которое также содержит ссылку на наблюдаемого актора. Наблюдатель 
+может либо явно обработать это сообщение, либо проиграть с помощью исключения DeathPactException. Это последнее полезно, 
+если актор больше не может выполнять свои обязанности после того, как наблюдаемый актор был остановлен. В нашем случае 
+группа должна продолжать функционировать после остановки одного устройства, поэтому нам нужно обработать сообщение 
+`Terminated(actorRef)`.
+
+Актор нашей группы устройств должен включать функциональность, которая:
+
+1. Начинает просмотр новых устройств, когда они созданы.
+2. Удаляет актора устройства с `Map[String, ActorRef]` - которая отображает устройства для участников устройства - когда 
+уведомление указывает, что оно остановлено.
+
+К сожалению, в завершенном сообщении содержится только `ActorRef` дочернего актора. Нам нужен идентификатор актора, 
+чтобы удалить его с карты существующих устройств на сопоставления акторов устройства. Чтобы иметь возможность сделать это 
+удаление, нам нужно ввести еще один плэйсхолдер, `Map[ActorRef, String]`, который позволит нам узнать идентификатор 
+устройства, соответствующий данному `ActorRef`.
+
+Добавление функциональности для идентификации актора приводит к следующему:
+
+```scala
+    class DeviceGroup(groupId: String) extends Actor with ActorLogging {
+      var deviceIdToActor = Map.empty[String, ActorRef]
+      var actorToDeviceId = Map.empty[ActorRef, String]
+    
+      override def preStart(): Unit = log.info("DeviceGroup {} started", groupId)
+    
+      override def postStop(): Unit = log.info("DeviceGroup {} stopped", groupId)
+    
+      override def receive: Receive = {
+        case trackMsg @ RequestTrackDevice(`groupId`, _) ⇒
+          deviceIdToActor.get(trackMsg.deviceId) match {
+            case Some(deviceActor) ⇒
+              deviceActor forward trackMsg
+            case None ⇒
+              log.info("Creating device actor for {}", trackMsg.deviceId)
+              val deviceActor = context.actorOf(Device.props(groupId, trackMsg.deviceId), s"device-${trackMsg.deviceId}")
+              context.watch(deviceActor)
+              actorToDeviceId += deviceActor -> trackMsg.deviceId
+              deviceIdToActor += trackMsg.deviceId -> deviceActor
+              deviceActor forward trackMsg
+          }
+    
+        case RequestTrackDevice(groupId, deviceId) ⇒
+          log.warning(
+            "Ignoring TrackDevice request for {}. This actor is responsible for {}.",
+            groupId, this.groupId
+          )
+    
+        case Terminated(deviceActor) ⇒
+          val deviceId = actorToDeviceId(deviceActor)
+          log.info("Device actor for {} has been terminated", deviceId)
+          actorToDeviceId -= deviceActor
+          deviceIdToActor -= deviceId
+    
+      }
+    }
+```
+
+До сих пор у нас нет средств для того, чтобы узнать, какие устройства отслеживает актер группы устройств, и поэтому мы 
+еще не можем проверить нашу новую функциональность. Чтобы сделать его проверяемым, мы добавляем новую возможность запроса 
+(сообщение `RequestDeviceList(requestId: Long)`), в котором перечислены активные идентификаторы устройств:
+
+```scala
+    object DeviceGroup {
+      def props(groupId: String): Props = Props(new DeviceGroup(groupId))
+    
+      final case class RequestDeviceList(requestId: Long)
+      final case class ReplyDeviceList(requestId: Long, ids: Set[String])
+    }
+    
+    class DeviceGroup(groupId: String) extends Actor with ActorLogging {
+      var deviceIdToActor = Map.empty[String, ActorRef]
+      var actorToDeviceId = Map.empty[ActorRef, String]
+    
+      override def preStart(): Unit = log.info("DeviceGroup {} started", groupId)
+    
+      override def postStop(): Unit = log.info("DeviceGroup {} stopped", groupId)
+    
+      override def receive: Receive = {
+        case trackMsg @ RequestTrackDevice(`groupId`, _) ⇒
+          deviceIdToActor.get(trackMsg.deviceId) match {
+            case Some(deviceActor) ⇒
+              deviceActor forward trackMsg
+            case None ⇒
+              log.info("Creating device actor for {}", trackMsg.deviceId)
+              val deviceActor = context.actorOf(Device.props(groupId, trackMsg.deviceId), s"device-${trackMsg.deviceId}")
+              context.watch(deviceActor)
+              actorToDeviceId += deviceActor -> trackMsg.deviceId
+              deviceIdToActor += trackMsg.deviceId -> deviceActor
+              deviceActor forward trackMsg
+          }
+    
+        case RequestTrackDevice(groupId, deviceId) ⇒
+          log.warning(
+            "Ignoring TrackDevice request for {}. This actor is responsible for {}.",
+            groupId, this.groupId
+          )
+    
+        case RequestDeviceList(requestId) ⇒
+          sender() ! ReplyDeviceList(requestId, deviceIdToActor.keySet)
+    
+        case Terminated(deviceActor) ⇒
+          val deviceId = actorToDeviceId(deviceActor)
+          log.info("Device actor for {} has been terminated", deviceId)
+          actorToDeviceId -= deviceActor
+          deviceIdToActor -= deviceId
+    
+      }
+    }
 ```
 
 
