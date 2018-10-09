@@ -1,4 +1,4 @@
-## `Akka` - руководство по началу работы (на языке Scala)
+## `Akka` - руководство
 
 `Akka` - набор библиотек с открытым исходным кодом для разработки масштабируемых, устойчивых систем, 
 охватывающих процессорные ядра и сети. `Akka` позволяет сосредоточиться на удовлетворении потребностей бизнеса вместо 
@@ -16,10 +16,10 @@
 3. [Обзор библиотек и модулей Akka](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/overview-of-akka-libraries-and-modules.md)
 4. [Быстрый старт с Акка](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/akka-quicksrart.md)
 5. [Введение в пример](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/introduction-to-the-example.md)
-   * [Архитектура акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/part1-actor-architecture.md)
-   * [Создание первого актора](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/creating-the-first-actor.md)
-   * [Работа с устройствами](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-actors.md)
-   * [Работа с устройствами](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-groups.md)
+   * [1. Архитектура акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/part1-actor-architecture.md)
+   * [2. Создание первого актора](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/creating-the-first-actor.md)
+   * [3. Работа с устройствами](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-actors.md)
+   * [4. Работа с устройствами](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-groups.md)
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
 
