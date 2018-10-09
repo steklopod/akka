@@ -4,10 +4,11 @@ import akka.testkit.TestProbe
 import ru.testkit.AkkaSpec
 
 class DeviceSpec extends AkkaSpec {
+  val probe       = TestProbe()
+  val deviceActor = system.actorOf(Device.props("group", "device"))
+
   "Device actor" must {
     "reply with empty reading if no temperature is known" in {
-      val probe       = TestProbe()
-      val deviceActor = system.actorOf(Device.props("group", "device"))
       deviceActor.tell(Device.ReadTemperature(requestId = 42), probe.ref)
       val response = probe.expectMsgType[Device.RespondTemperature]
       response.requestId should ===(42)
@@ -15,9 +16,6 @@ class DeviceSpec extends AkkaSpec {
     }
 
     "reply with latest temperature reading" in {
-      val probe       = TestProbe()
-      val deviceActor = system.actorOf(Device.props("group", "device"))
-
       deviceActor.tell(Device.RecordTemperature(requestId = 1, 24.0), probe.ref)
       probe.expectMsg(Device.TemperatureRecorded(requestId = 1))
 

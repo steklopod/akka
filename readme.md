@@ -19,6 +19,7 @@
    * [Архитектура акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/part1-actor-architecture.md)
    * [Создание первого актора](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/creating-the-first-actor.md)
    * [Работа с устройствами](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-actors.md)
+   * [Работа с устройствами](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-groups.md)
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
 
