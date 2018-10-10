@@ -1,4 +1,4 @@
-package ru.packt.o4_persistence
+package ru.packt.o4.persistence_1
 
 import akka.actor.ActorLogging
 import akka.persistence._

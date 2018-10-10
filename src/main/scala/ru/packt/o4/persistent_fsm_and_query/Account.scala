@@ -1,4 +1,4 @@
-package ru.packt.o4_persistence.persistent_fsm_and_query
+package ru.packt.o4.persistent_fsm_and_query
 
 import akka.persistence.fsm.PersistentFSM.FSMState
 import akka.persistence.fsm._

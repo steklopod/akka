@@ -1,10 +1,10 @@
 package com.packt.akka
 
 import akka.actor.{ActorSystem, Props}
-import ru.packt.o4_persistence.persistent_fsm_and_query.Account
+import ru.packt.o4.persistent_fsm_and_query.Account
 
 object PersistentFSM extends App {
-  import ru.packt.o4_persistence.persistent_fsm_and_query.Account._
+  import ru.packt.o4.persistent_fsm_and_query.Account._
 
   val system = ActorSystem("persistent-fsm-actors")
 
