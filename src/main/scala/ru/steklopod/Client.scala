@@ -1,8 +1,36 @@
 package ru.steklopod
 
-import akka.actor.{Actor, ActorRef}
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 
 import scala.io.StdIn
+
+object ClientApp extends App {
+  import com.typesafe.config.ConfigFactory
+  import scala.concurrent.duration._
+
+  // переопределим часть конфигурации секцией "client"
+  val rootConfig = ConfigFactory.load()
+  val config = rootConfig.getConfig("client").withFallback(rootConfig)
+
+  // создадим актор систему и актора-клиента
+  val actorSystem = ActorSystem("client-system", config)
+  val client: ActorRef = actorSystem.actorOf(Props[Client])
+
+  // полный akka-путь к Storage
+  val storagePath = "akka.tcp://storage-system@127.0.0.1:2552/user/storage"
+
+  val storageSelection = actorSystem.actorSelection(storagePath)
+
+  // ждем ответа
+  val resolveTimeout = FiniteDuration(10, SECONDS)
+
+  storageSelection.resolveOne(resolveTimeout).foreach { storage: ActorRef =>
+    // командуем клиенту присоединиться к хранилищу
+    println(s"Connected to $storage")
+    client ! Client.Connect(storage)
+  } (actorSystem.dispatcher) // контекст в которым выполнится Future
+}
+
 
 object Client {
   final case class Connect(storage: ActorRef)
