@@ -11,7 +11,6 @@ object Client {
 
 class Client extends Actor {
 
-  // обработчик сообщений начального состояния
   override def receive: Actor.Receive = {
     // в начальном состоянии дожидаемся команды присоединиться хранилищу
     case Client.Connect(storage) =>

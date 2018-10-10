@@ -8,7 +8,6 @@ import org.scalatest.junit.JUnitSuite
 
 @RunWith(classOf[JUnitPlatform])
 class Junit5Test  extends JUnitSuite with Matchers with BeforeAndAfterAll {
-  //http://www.scalatest.org/user_guide/using_junit_runner
 
   override def beforeAll: Unit = { println(">>> beforeAll <<< ") }
 
