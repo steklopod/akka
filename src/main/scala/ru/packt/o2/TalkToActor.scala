@@ -24,9 +24,21 @@ object TalkToActor extends App {
 
 case class User(username: String, email: String)
 
+
 object Storage {
   case class AddUser(user: User)
 }
+
+
+object Checker {
+  sealed trait CheckerMsg
+  case class CheckUser(user: User) extends CheckerMsg
+
+  sealed trait CheckerResponse
+  case class BlackUser(user: User) extends CheckerResponse
+  case class WhiteUser(user: User) extends CheckerResponse
+}
+
 
 class Storage extends Actor {
   var users = List.empty[User]
@@ -38,14 +50,6 @@ class Storage extends Actor {
   }
 }
 
-object Checker {
-  sealed trait CheckerMsg
-  case class CheckUser(user: User) extends CheckerMsg
-
-  sealed trait CheckerResponse
-  case class BlackUser(user: User) extends CheckerResponse
-  case class WhiteUser(user: User) extends CheckerResponse
-}
 
 class Checker extends Actor {
   val blackList = List(User("Adam", "adam@mail.com"))
@@ -53,14 +57,15 @@ class Checker extends Actor {
   def receive = {
     case CheckUser(user) =>
       if (blackList.contains(user)) {
-        println(s"Checker: ${user} is in blackList.")
+        println(s"BAD. Checker: $user находится в черном списке.")
         sender ! BlackUser(user)
       } else {
-        println(s"Checker: ${user} isn't in blackList.")
+        println(s"OK. Checker: $user отсутствует в черном списке.")
         sender ! WhiteUser(user)
       }
   }
 }
+
 
 object Recorder {
     case class NewUser(user: User)
@@ -68,17 +73,17 @@ object Recorder {
     def props(checker: ActorRef, storage: ActorRef) = Props(new Recorder(checker, storage))
   }
 
+
 class Recorder(checker: ActorRef, storage: ActorRef) extends Actor {
   import scala.concurrent.ExecutionContext.Implicits.global
   implicit val timeout = Timeout(5 seconds)
 
   def receive = {
     case NewUser(user) =>
-      println(s"Recorder receives NewUser for $user")
+      println(s"Регистратор проверяет нового пользователя $user")
       checker ? Checker.CheckUser(user) map {
         case Checker.WhiteUser(user) => storage ! Storage.AddUser(user)
-        case Checker.BlackUser(user) => println(s"Recorder: $user in in black user.")
+        case Checker.BlackUser(user) => println(s"Recorder: $user в черном списке.")
       }
   }
-
 }
