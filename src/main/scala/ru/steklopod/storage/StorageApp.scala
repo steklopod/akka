@@ -7,6 +7,7 @@ import scala.io.StdIn
 object StorageApp extends App {
   val actorSystem = ActorSystem("storage-system")
   val storage: ActorRef = actorSystem.actorOf(Props[Storage], "storage")
+
   StdIn.readLine()
   actorSystem.terminate()
 }

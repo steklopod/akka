@@ -23,10 +23,10 @@
 
 ### Актор-охранник
 
-Определим два актора &mdash; для **бармена**, **заказа** и **посетителя**. 
+Определим два актора &mdash; для **бармена** и **посетителя**. 
 
 ~~~scala
-val system = ActorSystem("Coffeehouse")
+val system = ActorSystem("CoffeeShop")
 val barista = system.actorOf(Props[Barista], "Barista")
 val customer = system.actorOf(Props(classOf[Customer], barista), "Customer")
 ~~~
@@ -48,8 +48,8 @@ val customer = system.actorOf(Props(classOf[Customer], barista), "Customer")
 на акторы. Мы можем получить путь к актору вызовом метода `path` на его ссылке `ActorRef`:
 
 ~~~scala
-barista.path // => akka.actor.ActorPath = akka://Coffeehouse/user/Barista
-customer.path // => akka.actor.ActorPath = akka://Coffeehouse/user/Customer
+barista.path // => akka.actor.ActorPath = akka://CoffeeShop/user/Barista
+customer.path // => akka.actor.ActorPath = akka://CoffeeShop/user/Customer
 ~~~
 
 За протоколом `akka` следует имя нашей системы акторов, потом имя пользовательского 
@@ -57,7 +57,7 @@ customer.path // => akka.actor.ActorPath = akka://Coffeehouse/user/Customer
 В случае распределённых систем для акторов, работающих на удалённых машинах
 мы увидим имя хоста и порт. 
 
-Пути к акторам могут быть использованы для поиска акторов. к примеру вместо того, чтобы
+Пути к акторам могут быть использованы для поиска акторов. К примеру, вместо того, чтобы
 передать `Customer` ссылку на актор бармена, мы могли бы найти этот актор вызовом метода
 `actorSelection` на `ActorContext`, передав путь в качестве аргумента:
 
@@ -204,7 +204,7 @@ class Customer(coffeeSource: ActorRef) extends Actor with ActorLogging {
 ~~~scala
 import Customer._
 
-val system = ActorSystem("Coffeehouse")
+val system = ActorSystem("CoffeeShop")
 
 val barista = system.actorOf(Props[Barista], "Barista")
 val customerJohnny = system.actorOf(Props(classOf[Customer], barista), "Johnny")
@@ -649,7 +649,7 @@ class Customer(coffeeSource: ActorRef) extends Actor with ActorLogging {
         coffeeSource ! EspressoRequest
       }
     case Terminated(barista) =>
-      log.info("Oh well, let's find another coffeehouse...")
+      log.info("Oh well, let's find another CoffeeShop...")
   }
 }
 ~~~
