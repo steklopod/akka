@@ -1,4 +1,5 @@
-package scala
+package ru.steklopod
+
 import akka.actor.{Actor, ActorRef}
 
 import scala.io.StdIn

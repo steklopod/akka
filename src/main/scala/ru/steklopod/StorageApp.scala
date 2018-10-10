@@ -1,4 +1,5 @@
-package scala
+package ru.steklopod
+
 import akka.actor._
 
 object StorageApp extends App {
