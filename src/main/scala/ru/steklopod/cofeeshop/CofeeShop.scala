@@ -15,12 +15,12 @@ object CofeeShop extends App {
   val customer = system.actorOf(Props(classOf[Customer], barista), "Customer")
 
   val capuchinoPrice: Future[Any] = barista ? CappuccinoRequest
-  capuchinoPrice.map { case Bill(cents) => println(s"Будут платить $cents р. за капучино") }
+  capuchinoPrice.map {
+    case Bill(cents) => println(s"Будут платить $cents р. за капучино")
+  }
 
   customer ! CaffeineWithdrawalWarning
-  barista  ! ClosingTime
-
-//  println("Я заказал капучино и эспрессо")
+  barista ! ClosingTime
 }
 
 object Order {

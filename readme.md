@@ -21,6 +21,8 @@
 
 ## [Пример 1 - StorageApp](https://github.com/steklopod/akka/blob/storage_app_starter/src/main/resources/storage_example.md)
 
-## [Пример 2 - CofeeShop](https://github.com/steklopod/akka/blob/storage_app_starter/src/main/resources/cofeeshop.md)  
+## [Пример 2.1 - CofeeShop ч.1](https://github.com/steklopod/akka/blob/storage_app_starter/src/main/resources/cofeeshop.md)  
+
+## [Пример 2.2 - CofeeShop ч.2](https://github.com/steklopod/akka/blob/storage_app_starter/src/main/resources/cofeeshop2.md)  
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._  
