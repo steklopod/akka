@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   "org.scalatest"      %% "scalatest"              % "3.2.0-SNAP10" % Test,
   "org.scalacheck"     %% "scalacheck"             % "1.13.5" % Test,
   "com.typesafe.akka"  %% "akka-actor"             % akkaVersion,
+  "com.typesafe.akka"  %% "akka-remote"            % akkaVersion,
   "com.typesafe.akka"  %% "akka-slf4j"             % akkaVersion,
   "com.typesafe.akka"  %% "akka-testkit"           % akkaVersion % Test
 )

@@ -280,13 +280,13 @@ _Рассмотрим построение небольшого приложен
 Запустим одно хранилище:
 
 ```scala
-    $ sbt "runMain ru.steklopod.StorageApp"
+    $ sbt "runMain ru.steklopod.storage.StorageApprageApp"
 ```
 
 И произвольное количество клиентов в разных терминалах:
 
 ```scala
-    $ sbt "runMain ru.steklopod.ClientApp"
+    $ sbt "runMain ru.steklopod.storage.ClientApp"
 ```
 
 Теперь мы можем помещать значения в общее хранилище командами **`put key value`** и считывать их в любом клиенте 

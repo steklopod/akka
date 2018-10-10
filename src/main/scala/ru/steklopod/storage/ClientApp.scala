@@ -1,4 +1,4 @@
-package ru.steklopod
+package ru.steklopod.storage
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 
@@ -10,10 +10,10 @@ object ClientApp extends App {
 
   // переопределим часть конфигурации секцией "client"
   val rootConfig = ConfigFactory.load()
-  val config = rootConfig.getConfig("client").withFallback(rootConfig)
+  val config     = rootConfig.getConfig("client").withFallback(rootConfig)
 
   // создадим актор систему и актора-клиента
-  val actorSystem = ActorSystem("client-system", config)
+  val actorSystem      = ActorSystem("client-system", config)
   val client: ActorRef = actorSystem.actorOf(Props[Client])
 
   // полный akka-путь к Storage
@@ -24,13 +24,14 @@ object ClientApp extends App {
   // ждем ответа
   val resolveTimeout = FiniteDuration(10, SECONDS)
 
-  storageSelection.resolveOne(resolveTimeout).foreach { storage: ActorRef =>
-    // командуем клиенту присоединиться к хранилищу
-    println(s"Connected to $storage")
-    client ! Client.Connect(storage)
-  } (actorSystem.dispatcher) // контекст в которым выполнится Future
+  storageSelection
+    .resolveOne(resolveTimeout)
+    .foreach { storage: ActorRef =>
+      // командуем клиенту присоединиться к хранилищу
+      println(s"Connected to $storage")
+      client ! Client.Connect(storage)
+    }(actorSystem.dispatcher) // контекст в которым выполнится Future
 }
-
 
 class Client extends Actor {
 

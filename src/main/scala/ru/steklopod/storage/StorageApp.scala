@@ -1,4 +1,4 @@
-package ru.steklopod
+package ru.steklopod.storage
 
 import akka.actor._
 
