@@ -1,30 +1,45 @@
 package scala
 import akka.actor._
 
-// все акторы наследуются от базового класса akka.actor.Actor
+object StorageApp extends App {
+  val actorSystem = ActorSystem()
+
+  val storage: ActorRef = actorSystem.actorOf(Props[Storage])
+  val client: ActorRef  = actorSystem.actorOf(Props[Client])
+
+  client ! Client.Connect(storage)
+
+  actorSystem.terminate()
+}
+
 class Storage extends Actor {
-  // функция обработчик сообщений
-  override def receive: Receive = {
-    case msg => println(msg)
+  // перейдем в начальное состояние
+  override def receive: Receive = process(Map.empty)
+
+  def process(store: Map[String, String]): Receive = {
+    // в ответ на сообщение Get вернем значение ключа в текущем состоянии
+    // актор-отправитель сообщения доступен под именем sender
+    case Storage.Get(key) => sender ! Storage.GetResult(key, store.get(key))
+
+    // в ответ на сообщение Put перейдем в следующее состояние
+    // и отправим подтверждение вызывающему
+    case Storage.Put(key, value) =>
+      context become process(store + (key -> value))
+      sender ! Storage.Ack
+
+    case Storage.Delete(key) =>
+      context become process(store - key)
+      sender ! Storage.Ack
   }
 }
 
-object StorageApp extends App {
-  // все акторы принадлежат одной из систем акторов
-  val actorSystem = ActorSystem()
+object Storage {
+  // in
+  final case class Get(key: String)
+  final case class Put(key: String, value: String)
+  final case class Delete(key: String)
 
-  // создавать акторы надо вызовом actorOf на соответствующем
-  // actorSystem или context.actorOf внутри самого актора
-  val storageActor: ActorRef = actorSystem.actorOf(Props[Storage])
-
-  // методы акторов не вызываются напрямую, а только посредством отправки
-  // сообщений на инкапсулирующую его ссылку actorRef при помощи .tell или !
-  storageActor ! "string message"
-  storageActor ! 42
-
-  // дождемся обработки сообщений
-  Thread.sleep(1000)
-
-  // выход из программы
-  actorSystem.terminate()
+  // out
+  final case class GetResult(key: String, value: Option[String])
+  case object Ack
 }
