@@ -1,16 +1,33 @@
 package ru.packt.o2
 
-import akka.actor.{ActorRef, ActorSystem, Props, Actor}
-import scala.concurrent.duration._
-import akka.actor.OneForOneStrategy
 import akka.actor.SupervisorStrategy._
+import akka.actor.{Actor, ActorRef, ActorSystem, OneForOneStrategy, Props}
+import ru.packt.o2.Aphrodite.{RestartException, ResumeException, StopException}
+
+import scala.concurrent.duration._
+
+object Supervision extends App {
+  val system = ActorSystem("supervision")
+
+  val hera = system.actorOf(Props[Hera], "hera")
+
+  // hera ! "Resume"
+  // Thread.sleep(1000)
+  // println()
+
+  // hera ! "Restart"
+  // Thread.sleep(1000)
+  // println()
+
+  hera ! "Stop"
+  Thread.sleep(1000)
+  println()
+
+  system.terminate()
+}
 
 class Aphrodite extends Actor {
-  import Aphrodite._
-
-  override def preStart() = {
-    println("Aphrodite preStart hook....")
-  }
+  override def preStart() = println("Aphrodite preStart hook....")
 
   override def preRestart(reason: Throwable, message: Option[Any]) = {
     println("Aphrodite preRestart hook...")
@@ -27,14 +44,10 @@ class Aphrodite extends Actor {
   }
 
   def receive = {
-    case "Resume" =>
-      throw ResumeException
-    case "Stop" =>
-      throw StopException
-    case "Restart" =>
-      throw RestartException
-    case _ =>
-      throw new Exception
+    case "Resume"  => throw ResumeException
+    case "Stop"    => throw StopException
+    case "Restart" => throw RestartException
+    case _         => throw new Exception
   }
 }
 
@@ -45,11 +58,9 @@ object Aphrodite {
 }
 
 class Hera extends Actor {
-  import Aphrodite._
-
   var childRef: ActorRef = _
 
-  override val supervisorStrategy =
+  override val supervisorStrategy: OneForOneStrategy =
     OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 second) {
       case ResumeException  => Resume
       case RestartException => Restart
@@ -58,39 +69,14 @@ class Hera extends Actor {
     }
 
   override def preStart() = {
-    // Create Aphrodite Actor
     childRef = context.actorOf(Props[Aphrodite], "Aphrodite")
     Thread.sleep(100)
   }
 
   def receive = {
     case msg =>
-      println(s"Hera received ${msg}")
+      println(s"Hera received $msg")
       childRef ! msg
       Thread.sleep(100)
   }
-}
-
-object Supervision extends App {
-
-  // Create the 'supervision' actor system
-  val system = ActorSystem("supervision")
-
-  // Create Hera Actor
-  val hera = system.actorOf(Props[Hera], "hera")
-
-  // hera ! "Resume"
-  // Thread.sleep(1000)
-  // println()
-
-  // hera ! "Restart"
-  // Thread.sleep(1000)
-  // println()
-
-  hera ! "Stop"
-  Thread.sleep(1000)
-  println()
-
-  system.terminate()
-
 }
