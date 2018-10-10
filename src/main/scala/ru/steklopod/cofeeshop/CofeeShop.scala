@@ -3,7 +3,8 @@ import akka.actor.{ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 import ru.steklopod.cofeeshop.Barista._
-import ru.steklopod.cofeeshop.Customer.{Bill, CaffeineWithdrawalWarning}
+import ru.steklopod.cofeeshop.Customer.CaffeineWithdrawalWarning
+import ru.steklopod.cofeeshop.Register.Bill
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -24,5 +25,4 @@ object CofeeShop extends App {
   capuchinoPrice.map {
     case Bill(cents) => println(s"Будут платить $cents р. за капучино")
   }
-
 }

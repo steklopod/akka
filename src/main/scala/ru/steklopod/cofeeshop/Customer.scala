@@ -6,13 +6,11 @@ import ru.steklopod.cofeeshop.Customer.CaffeineWithdrawalWarning
 
 class Customer(coffeeSource: ActorRef) extends Actor with ActorLogging {
   def receive = {
-    case CaffeineWithdrawalWarning => coffeeSource ! EspressoRequest
-    case (EspressoCup(Filled), Receipt(amount)) =>
-      log.info(s"yay, caffeine for ${self}!")
+    case CaffeineWithdrawalWarning              => coffeeSource ! EspressoRequest
+    case (EspressoCup(Filled), Receipt(amount)) => log.info(s"Ёу! Кофеин для $self!")
   }
 }
 
 object Customer {
   case object CaffeineWithdrawalWarning
-  case class Bill(cents: Int)
 }
