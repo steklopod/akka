@@ -280,7 +280,7 @@ _Рассмотрим построение небольшого приложен
 Запустим одно хранилище:
 
 ```scala
-    $ sbt "runMain ru.steklopod.storage.StorageApprageApp"
+    $ sbt "runMain ru.steklopod.storage.StorageApp"
 ```
 
 И произвольное количество клиентов в разных терминалах:
