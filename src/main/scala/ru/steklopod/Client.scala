@@ -32,11 +32,6 @@ object ClientApp extends App {
 }
 
 
-object Client {
-  final case class Connect(storage: ActorRef)
-  case object Process
-}
-
 class Client extends Actor {
 
   override def receive: Actor.Receive = {
@@ -71,4 +66,9 @@ class Client extends Actor {
 
     case Storage.Ack => println("Received ack.")
   }
+}
+
+object Client {
+  final case class Connect(storage: ActorRef)
+  case object Process
 }
