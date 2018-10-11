@@ -26,6 +26,7 @@
 ### Общие понятия:
 
 1. [Почему современным системам нужна новая модель программирования](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/Terminology_Concepts.md)
+2. [Системы акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/actor-systems.md)
 
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
