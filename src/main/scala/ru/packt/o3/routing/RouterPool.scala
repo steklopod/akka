@@ -1,18 +1,14 @@
 package ru.packt.o3.routing
 
-import scala.util
-
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import Worker._
+import akka.actor.{Actor, ActorRef, Props}
+import ru.packt.o3.routing.Worker._
 
 class RouterPool extends Actor {
 
   var routees: List[ActorRef] = _
 
   override def preStart() = {
-    routees = List.fill(5)(
-      context.actorOf(Props[Worker])
-    )
+    routees = List.fill(5)( context.actorOf(Props[Worker]) )
   }
 
   def receive() = {
