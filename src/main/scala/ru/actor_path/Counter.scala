@@ -1,4 +1,4 @@
-package ru.packt.o3.actor_path
+package ru.actor_path
 
 import akka.actor.Actor
 
