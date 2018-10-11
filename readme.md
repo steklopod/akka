@@ -11,6 +11,8 @@
 
 ### Содержание:
 
+#### Руководство по началу работы:
+ 
 1. [Почему современным системам нужна новая модель программирования](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/why-modern-systems-need-anew-programming-model.md)
 2. [Как модель актора отвечает потребностям современных распределенных систем](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/how-the-actor-model-meets-the-needs-of-modern-distributed-systems.md)
 3. [Обзор библиотек и модулей Akka](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/overview-of-akka-libraries-and-modules.md)
@@ -18,8 +20,13 @@
 5. [Введение в пример](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/introduction-to-the-example.md)
    * [1. Архитектура акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/part1-actor-architecture.md)
    * [2. Создание первого актора](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/creating-the-first-actor.md)
-   * [3. Работа с устройствами](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-actors.md)
-   * [4. Работа с устройствами](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-groups.md)
+   * [3. Работа с акторами устройств](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-actors.md)
+   * [4. Работа с группами устройств](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/working-with-device-groups.md)
+
+### Общие понятия:
+
+1. [Почему современным системам нужна новая модель программирования](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/Terminology_Concepts.md)
+
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
 
