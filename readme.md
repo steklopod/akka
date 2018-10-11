@@ -27,6 +27,7 @@
 
 1. [Почему современным системам нужна новая модель программирования](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/Terminology_Concepts.md)
 2. [Системы акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/actor-systems.md)
+3. [Что такое актор?](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/what-is-an-actor.md)
 
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
