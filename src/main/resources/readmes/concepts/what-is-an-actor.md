@@ -1,6 +1,6 @@
 ## Что такое актор?
 
-В предыдущем разделе о [системе акторво](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/actor-systems.md) 
+В предыдущем разделе о [системе акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/actor-systems.md) 
 объяснялось, как субъекты формируют иерархии и являются наименьшей единицей при создании приложения. В этом разделе 
 рассматривается один такой актор изолированно, объясняя понятия, с которыми вы сталкиваетесь при его реализации. 
 
