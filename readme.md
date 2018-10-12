@@ -33,6 +33,7 @@
 6. [Прозрачность местоположения](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/location-transparency.md)
 7. [Акка и модель памяти Java](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/akka-and-the-java-memory-model.md)
 8. [Надежность доставки сообщений](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/message-delivery-reliability.md)
+8. [Конфигурация](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/configuration.md)
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
 
