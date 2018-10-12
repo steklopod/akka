@@ -1,4 +1,4 @@
-package ru.packt.o3.hotswap_behavior
+package ru.hotswap_behavior
 
 import akka.actor.{ActorSystem, Props, Stash, FSM}
 

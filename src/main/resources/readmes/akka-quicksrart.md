@@ -35,7 +35,7 @@
 
 Как вы видели на консольном выводе, в примере выводится несколько приветствий. Давайте посмотрим, что происходит во время выполнения.
 
-![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-architecture.png "hello-akka-architecture")
+![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/images/hello-akka-architecture.png "hello-akka-architecture")
 
 1. Во-первых, основной класс (`main class`) создает `akka.actor.ActorSystem`, **контейнер, в котором работают акторы**; 
 
@@ -46,7 +46,7 @@
 4. Наконец, инструкция команд для акторов `Greeter` **активируют их для отправки сообщений** в актор `Printer`, 
 который выводит их на консоль:
 
-![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/hello-akka-messages.png "hello-akka-messages")
+![alt text](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/images/hello-akka-messages.png "hello-akka-messages")
 
 Давайте рассмотрим некоторые рекомендации по работе с акторами и сообщениями в контексте примера `Hello World`.
 

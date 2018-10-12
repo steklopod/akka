@@ -1,4 +1,4 @@
-package ru.packt.o3.hotswap_behavior
+package ru.hotswap_behavior
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props, Stash}
 import UserStorage._

@@ -1,4 +1,4 @@
-package ru.packt.o3.routing
+package ru.routing
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.routing.{RoundRobinPool, FromConfig}

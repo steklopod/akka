@@ -1,4 +1,4 @@
-package ru.sample
+package ru.hello
 import akka.actor.{ActorSystem, Props}
 import ru.testkit.AkkaSpec
 

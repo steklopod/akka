@@ -1,14 +1,13 @@
-package ru.sample
+package ru.hello
 
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import ru.Greeter
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import ru.hello.Greeter.{Greet, WhoToGreet}
+import ru.hello.Printer.Greeting
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import ru.Greeter._
-import ru.Printer.Greeting
 
 class AkkaQuickstartSpec(_system: ActorSystem)
     extends TestKit(_system)

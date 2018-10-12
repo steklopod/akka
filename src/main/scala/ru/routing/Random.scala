@@ -1,4 +1,4 @@
-package ru.packt.o3.routing
+package ru.routing
 
 import akka.actor.{ActorSystem, Props}
 import akka.routing.{RandomGroup, FromConfig}

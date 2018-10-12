@@ -1,6 +1,8 @@
-package ru
+package ru.hello
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props}
+import ru.hello.Greeter.{Greet, WhoToGreet}
+import ru.hello.Printer.Greeting
 
 object AkkaQuickstart extends App {
   import Greeter._
@@ -16,7 +18,7 @@ object AkkaQuickstart extends App {
   howdyGreeter ! WhoToGreet("Akka")
   howdyGreeter ! Greet
 
-  howdyGreeter ! WhoToGreet("Lightbend")
+  howdyGreeter ! WhoToGreet("Dima")
   howdyGreeter ! Greet
 
   helloGreeter ! WhoToGreet("Scala")
@@ -33,9 +35,6 @@ object Greeter {
 }
 
 class Greeter(message: String, printerActor: ActorRef) extends Actor {
-  import Greeter._
-  import Printer._
-
   var greeting = ""
 
   def receive: PartialFunction[Any, Unit] = {
@@ -50,8 +49,6 @@ object Printer {
 }
 
 class Printer extends Actor with ActorLogging {
-  import Printer._
-
   def receive: PartialFunction[Any, Unit] = {
     case Greeting(greeting) => log.info("Greeting received (from " + sender() + "): " + greeting)
   }
