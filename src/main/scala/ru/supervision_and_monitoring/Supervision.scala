@@ -13,7 +13,6 @@ object Supervision extends App {
 
   hera ! "Stop"
   Thread.sleep(1000)
-  println()
 
   system.terminate()
 }
@@ -56,13 +55,13 @@ class Hera extends Actor {
     OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 second) {
       case ResumeException  => Resume
       case RestartException => Restart
-      case StopException    => Stop
+      case StopException    => Stop // здесь
       case _: Exception     => Escalate
     }
 
   override def preStart() = {
     childRef = context.actorOf(Props[Aphrodite], "Aphrodite")
-    Thread.sleep(100)
+//    Thread.sleep(100)
   }
 
   def receive = {
