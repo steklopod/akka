@@ -30,7 +30,7 @@
 3. [Что такое актор?](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/what-is-an-actor.md)
 3. [Наблюдение и мониторинг](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/supervision-and-monitoring.md)
 4. [Ссылки, пути и адреса акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/actor-references-paths-and-addresses.md)
-
+5. [Прозрачность местоположения](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/location-transparency.md)
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
 
