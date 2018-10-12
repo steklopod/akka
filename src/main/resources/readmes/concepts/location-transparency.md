@@ -57,6 +57,8 @@ Docker нарушается предположение 1, если в сетев
   его конфигурация может быть свободно переопределена из файла конфигурации, включая смешение с удаленным развертыванием
    (некоторых из) дочерних элементов.
 
+[=> далее: Акка и модель памяти Java](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/akka-and-the-java-memory-model.md)
+
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
 
 [<= содержание](https://github.com/steklopod/akka/blob/akka_starter/readme.md)

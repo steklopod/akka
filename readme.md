@@ -28,9 +28,11 @@
 1. [Терминология, концепции](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/Terminology_Concepts.md)
 2. [Системы акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/actor-systems.md)
 3. [Что такое актор?](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/what-is-an-actor.md)
-3. [Наблюдение и мониторинг](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/supervision-and-monitoring.md)
-4. [Ссылки, пути и адреса акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/actor-references-paths-and-addresses.md)
-5. [Прозрачность местоположения](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/location-transparency.md)
+4. [Наблюдение и мониторинг](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/supervision-and-monitoring.md)
+5. [Ссылки, пути и адреса акторов](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/actor-references-paths-and-addresses.md)
+6. [Прозрачность местоположения](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/location-transparency.md)
+7. [Акка и модель памяти Java](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/akka-and-the-java-memory-model.md)
+8. [Надежность доставки сообщений](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/message-delivery-reliability.md)
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
 
