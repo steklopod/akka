@@ -59,72 +59,70 @@
 * Закрытие внутреннего состояния Actor и отображение его другим потокам
 
 ```scala
-import akka.actor.{ Actor, ActorRef }
+import akka.actor.{Actor, ActorRef}
 import akka.pattern.ask
 import akka.util.Timeout
-import scala.concurrent.Future
+
+import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.collection.mutable
 
-case class Message(msg: String)
+class SharedMutableStateDocSpec {
 
-class EchoActor extends Actor {
-  def receive = {
-    case msg ⇒ sender() ! msg
+  case class Message(msg: String)
+
+  class EchoActor extends Actor {
+    def receive = {
+      case msg ⇒ sender() ! msg
+    }
   }
-}
 
-class CleanUpActor extends Actor {
-  def receive = {
-    case set: mutable.Set[_] ⇒ set.clear()
+  class CleanUpActor extends Actor {
+    def receive = {
+      case set: mutable.Set[_] ⇒ set.clear()
+    }
   }
-}
 
-class MyActor(echoActor: ActorRef, cleanUpActor: ActorRef) extends Actor {
-  var state = ""
-  val mySet = mutable.Set[String]()
+  class MyActor(echoActor: ActorRef, cleanUpActor: ActorRef) extends Actor {
+    var state = ""
+    val mySet = mutable.Set[String]()
 
-  def expensiveCalculation(actorRef: ActorRef): String = {
     // это очень дорогостоящая операция
-    "Meaning of life is 42"
-  }
+    def expensiveCalculation(actorRef: ActorRef): String =    "Meaning of life is 42"
+    def expensiveCalculation(): String =      "Meaning of life is 42" 
 
-  def expensiveCalculation(): String = {
-    // это очень дорогостоящая операция
-    "Meaning of life is 42"
-  }
+    def receive = {
+      case _ ⇒
+        implicit val ec: ExecutionContextExecutor = context.dispatcher
+        implicit val timeout: Timeout             = Timeout(5 seconds) // needed for `?` below
 
-  def receive = {
-    case _ ⇒
-      implicit val ec = context.dispatcher
-      implicit val timeout = Timeout(5 seconds) // needed for `?` below
+        // Пример правильного подхода
+        // Полностью безопасно: "self" в порядке, чтобы закрыть и это ActorRef, который является потокобезопасным
+        Future { expensiveCalculation() } foreach { self ! _ }
 
-       // Пример неправильного подхода
-       // Очень плохо: общее измененное состояние приведет к
-       // приложение разбивается на странные пути
-      Future { state = "This will race" }
-      ((echoActor ? Message("With this other one")).mapTo[Message])
-        .foreach { received ⇒ state = received.msg }
+        // Полностью безопасно: мы закрываем фиксированное значение
+        //и это ActorRef, который является потокобезопасным
+        val currentSender = sender()
+        Future { expensiveCalculation(currentSender) }
 
-       // Очень плохо: shared mutable object позволяет
-       // другой актер, чтобы мутировать ваше собственное состояние,
-       // или хуже, вы можете получить странные условия гонки
-      cleanUpActor ! mySet
 
-       // Очень плохо: «отправитель» изменяется для каждого сообщения,
-       // shared mutable state bug
-      Future { expensiveCalculation(sender()) }
+        //Пример неправильного подхода
+        //ОЧЕНЬ ПЛОХО: общее измененное состояние приведет к
+        //приложение разбивается на странные пути
+        Future { state = "This will race" }
+        (echoActor ? Message("With this other one"))
+          .mapTo[Message]
+          .foreach { received ⇒ state = received.msg
+          }
 
-       // Пример правильного подхода
-       // Полностью безопасно: «Я» в порядке, чтобы закрыть
-       // и это ActorRef, который является потокобезопасным
-      Future { expensiveCalculation() } foreach { self ! _ }
+        // ОЧЕНЬ ПЛОХО: shared mutable object позволяет другой актору мутировать ваше собственное состояние,
+        // или хуже, вы можете получить странные условия гонки
+        cleanUpActor ! mySet
 
-       // Полностью безопасно: мы закрываем фиксированное значение
-       // и это ActorRef, который является потокобезопасным
-      val currentSender = sender()
-      Future { expensiveCalculation(currentSender) }
+        //ОЧЕНЬ ПЛОХО: «отправитель» изменяется для каждого сообщения, общая ошибка измененного состояния
+        Future { expensiveCalculation(sender()) }
+    }
   }
 }
 ```
