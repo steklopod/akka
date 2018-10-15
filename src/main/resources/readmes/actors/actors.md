@@ -131,6 +131,96 @@ val props7 = Props(new MyActor)
 >Предупреждение!  Объявление одного актора в другом очень опасно и разрушает инкапсуляцию актора. Никогда не 
 передавайте эту ссылку актору в реквизиты!  
 
+#### Крайние случаи (Edge cases)
+В создании актора есть два крайних случая:
+
+* Актор с аргументами `AnyVal`.
+
+```scala
+case class MyValueClass(v: Int) extends AnyVal
+```
+
+```scala
+class ValueActor(value: MyValueClass) extends Actor {
+  def receive = {
+    case multiplier: Long ⇒ sender() ! (value.v * multiplier)
+  }
+}
+val valueClassProp = Props(classOf[ValueActor], MyValueClass(5)) // Unsupported
+```
+
+* Актор со значениями конструктора по умолчанию.
+
+```scala
+class DefaultValueActor(a: Int, b: Int = 5) extends Actor {
+  def receive = {
+    case x: Int ⇒ sender() ! ((a + x) * b)
+  }
+}
+
+val defaultValueProp1 = Props(classOf[DefaultValueActor], 2.0) // Unsupported
+
+class DefaultValueActor2(b: Int = 5) extends Actor {
+  def receive = {
+    case x: Int ⇒ sender() ! (x * b)
+  }
+}
+val defaultValueProp2 = Props[DefaultValueActor2] // Unsupported
+val defaultValueProp3 = Props(classOf[DefaultValueActor2]) // Unsupported
+```
+
+В обоих случаях исключение `IllegalArgumentException` будет брошено, из-за того что никакой конструктор соответствия не найден.
+
+В следующем разделе объясняются рекомендуемые способы создания реквизита Актора таким образом, который одновременно 
+защищает от этих крайних случаев.
+
+#### Рекомендуемая практика
+Это хорошая идея, чтобы предоставить фабричные методы на сопутствующем объекте каждого Актора, которые помогают 
+поддерживать создание подходящих реквизитов как можно ближе к определению актора. Это также позволяет избежать ошибок, 
+связанных с использованием метода `Props.apply(...)`, который принимает аргумент `by-name`, поскольку внутри 
+объекта-компаньона данный блок кода не сохранит ссылку на свою охватывающую область:
+
+```scala
+object DemoActor {
+  /**
+    * Создайте реквизит для актора этого типа.
+    *
+    * @param magicNumber - Магическое число, которое нужно передать конструктору этого актора.
+    * @ возвратите реквизит для создания этого актора, который затем может быть дополнительно настроен
+    * (например, вызов `.withDispatcher ()` на нем)
+   */
+  def props(magicNumber: Int): Props = Props(new DemoActor(magicNumber))
+}
+
+class DemoActor(magicNumber: Int) extends Actor {
+  def receive = {
+    case x: Int ⇒ sender() ! (x + magicNumber)
+  }
+}
+
+class SomeOtherActor extends Actor {
+  // Props(new DemoActor(42)) не будет безопасным
+  context.actorOf(DemoActor.props(42), "demo")
+  // ...
+}
+```
+
+Другая хорошая практика заключается в том, чтобы объявить, какие сообщения может получить Актор в сопутствующем 
+объекте Актора, что облегчает понимание того, что он может получить:
+
+```scala
+object MyActor {
+  case class Greeting(from: String)
+  case object Goodbye
+}
+class MyActor extends Actor with ActorLogging {
+  import MyActor._
+  def receive = {
+    case Greeting(greeter) ⇒ log.info(s"I was greeted by $greeter.")
+    case Goodbye           ⇒ log.info("Someone said goodbye to me.")
+  }
+}
+```
 
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
