@@ -699,7 +699,76 @@ val future = myActor ? "hello"
 синхронизации и условиям гонки, потому что обратный вызов будет запланирован одновременно с окружающим актором. 
 К сожалению, пока не удается обнаружить эти незаконные обращения во время компиляции. 
 
+### Получение сообщений
+Актор должен реализовать метод приема для приема сообщений:
 
+```scala
+type Receive = PartialFunction[Any, Unit]
+
+def receive: Actor.Receive
+```
+
+Этот метод возвращает `PartialFunction`, например. предложение `match / case`, в котором сообщение может быть сопоставлено
+ с различными предложениями case, используя сопоставление шаблонов Scala. Вот пример:
+ 
+```scala
+import akka.actor.Actor
+import akka.actor.Props
+import akka.event.Logging
+
+class MyActor extends Actor {
+  val log = Logging(context.system, this)
+
+  def receive = {
+    case "test" ⇒ log.info("received test")
+    case _      ⇒ log.info("received unknown message")
+  }
+}
+```
+### Ответ на сообщения
+
+Если вы хотите иметь дескриптор для ответа на сообщение, вы можете использовать `sender()`, который дает вам `ActorRef`. 
+Вы можете ответить, отправив этому ActorRef с `sender() ! replyMsg.`. Вы также можете сохранить ActorRef для ответа 
+позже или передать другим участникам. Если отправителя нет (сообщение было отправлено без актора или будущего контекста),
+ то отправитель по умолчанию ссылается на «мертвую букву» актора ref.
+ 
+```scala
+sender() ! x // ответы будут переданы этому актору
+```
+
+### Тайм-аут приема
+`ActorContext setReceiveTimeout` определяет тайм-аут бездействия, после которого запускается отправка сообщения 
+`ReceiveTimeout`. Когда указано, функция приема должна иметь возможность обрабатывать сообщение `akka.actor.ReceiveTimeout`.
+ 1 миллисекунда является минимальным временем ожидания.
+
+Обратите внимание, что тайм-аут приема может срабатывать и выдавать сообщение `ReceiveTimeout` сразу после того, как 
+другое сообщение было выставлено в очередь; следовательно, не гарантируется, что после приема тайм-аута приема должен 
+был быть заранее установленный период времени, как он сконфигурирован с помощью этого метода.
+
+После установки тайм-аут приема остается в силе (т.е. продолжает многократно срабатывать после периодов бездействия). 
+Перейдите в `Duration.Undeined` для отключения этой функции.
+
+```scala
+import akka.actor.ReceiveTimeout
+import scala.concurrent.duration._
+class MyActor extends Actor {
+  // To set an initial delay
+  context.setReceiveTimeout(30 milliseconds)
+  def receive = {
+    case "Hello" ⇒
+      // To set in a response to a message
+      context.setReceiveTimeout(100 milliseconds)
+    case ReceiveTimeout ⇒
+      // To turn it off
+      context.setReceiveTimeout(Duration.Undefined)
+      throw new RuntimeException("Receive timed out")
+  }
+}
+```
+
+Сообщения, отмеченные `NotInfluenceReceiveTimeout`, не будут сбросить таймер. Это может быть полезно, когда 
+`ReceiveTimeout` должен быть уволен из-за внешнего бездействия, но не зависит от внутренней активности, например, 
+запланированные сообщения о тике.
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
 
