@@ -1,6 +1,21 @@
 package ru.hotswap_behavior
 
-import akka.actor.{ActorSystem, Props, Stash, FSM}
+import akka.actor.{ActorSystem, FSM, Props, Stash}
+
+object FiniteStateMachine extends App {
+  import ru.hotswap_behavior.UserStorageFSM._
+
+  val system = ActorSystem("Hotswap-FSM")
+
+  val userStorage = system.actorOf(Props[UserStorageFSM], "userStorage-fsm")
+
+  userStorage ! Connect
+  userStorage ! Operation(DBOperation.Create, User("Admin", "admin@packt.com"))
+  userStorage ! Disconnect
+  Thread.sleep(100)
+
+  system.terminate()
+}
 
 object UserStorageFSM {
   // FSM State
@@ -59,21 +74,4 @@ class UserStorageFSM extends FSM[UserStorageFSM.State, UserStorageFSM.Data] with
 
 }
 
-object FiniteStateMachine extends App {
-  import UserStorageFSM._
 
-  val system = ActorSystem("Hotswap-FSM")
-
-  val userStorage = system.actorOf(Props[UserStorageFSM], "userStorage-fsm")
-
-  userStorage ! Connect
-
-  userStorage ! Operation(DBOperation.Create, User("Admin", "admin@packt.com"))
-
-  userStorage ! Disconnect
-
-  Thread.sleep(100)
-
-  system.terminate()
-
-}
