@@ -43,6 +43,7 @@
 4. [Почтовые ящики](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/mailboxes.md)
 5. [Маршрутизация](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/routing.md)
 6. [FSM](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/FSM.md)
+7. [Персистентность](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/persistence.md)
 
 
 
