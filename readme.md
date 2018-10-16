@@ -33,11 +33,12 @@
 6. [Прозрачность местоположения](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/location-transparency.md)
 7. [Акка и модель памяти Java](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/akka-and-the-java-memory-model.md)
 8. [Надежность доставки сообщений](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/message-delivery-reliability.md)
-8. [Конфигурация](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/configuration.md)
+9. [Конфигурация](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/concepts/configuration.md)
 
 #### Акторы:
 
 1. [Акторы](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/actors.md)
+2. [Отказоустойчивость](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/fault-tolerance.md)
 
 
 
