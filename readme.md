@@ -41,6 +41,7 @@
 2. [Отказоустойчивость](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/fault-tolerance.md)
 3. [Диспетчеры](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/dispatchers.md)
 4. [Почтовые ящики](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/mailboxes.md)
+5. [Маршрутизация](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/routing.md)
 
 
 
