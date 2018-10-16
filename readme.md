@@ -39,6 +39,7 @@
 
 1. [Акторы](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/actors.md)
 2. [Отказоустойчивость](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/fault-tolerance.md)
+3. [Диспетчеры](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/dispatchers.md)
 
 
 
