@@ -13,6 +13,7 @@ object WatchApp extends App {
 
   counter1 ! Inc(3)
   counter1 ! PoisonPill
+  selection1 ! PoisonPill
   Thread.sleep(1000)
 
   val counter2: ActorRef         = system.actorOf(Props[Counter], "counter")
