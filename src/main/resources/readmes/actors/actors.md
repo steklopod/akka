@@ -1093,6 +1093,74 @@ akka.coordinated-shutdown.exit-jvm = on
 akka.coordinated-shutdown.run-by-jvm-shutdown-hook=off
 ```
 
+### Become/Unbecome
+#### Обновить (Upgrade)
+Akka поддерживает горячую настройку (`hotswapping`) цикла сообщений Actor во время выполнения (`runtime`):
+ вызывается метод `context.become` изнутри актора. 
+ 
+ Метод `become` принимакет `PartialFunction[Any, Unit]`, который реализует  новый обработчик сообщений. 
+ Код hotswapped хранится в Стеке, который можно вытолкнуть и выскочить (`pushed/popped`).
+
+>Обратите внимание, что актор вернется к своему первоначальному поведению при перезапуске его Супервизором.
+
+Чтобы отключить поведение Actor, выполните следующие действия:
+
+```scala
+class HotSwapActor extends Actor {
+  import context._
+  def angry: Receive = {
+    case "foo" ⇒ sender() ! "I am already angry?"
+    case "bar" ⇒ become(happy)
+  }
+
+  def happy: Receive = {
+    case "bar" ⇒ sender() ! "I am already happy :-)"
+    case "foo" ⇒ become(angry)
+  }
+
+  def receive = {
+    case "foo" ⇒ become(angry)
+    case "bar" ⇒ become(happy)
+  }
+}
+```
+
+Этот вариант метода `become` полезен для разных вещей, например для реализации конечного автомата состояния (`FSM`).
+ Он заменит текущее поведение (т.е. верхнюю часть стека поведения), что означает, что вы не используете `unbecome`,
+  вместо этого всегда выполняется следующее поведение.
+
+Другой способ использования `become` не заменяет, а добавляет в верхнюю часть стека поведения. В этом случае необходимо 
+следить за тем, чтобы количество операций `pop` (то есть небезопасное) соответствовало числу `push` в конечном итоге, 
+в противном случае это означает утечку памяти (поэтому это поведение не является дефолт).
+
+```scala
+case object Swap
+class Swapper extends Actor {
+  import context._
+  val log = Logging(system, this)
+
+  def receive = {
+    case Swap ⇒
+      log.info("Hi")
+      become({
+        case Swap ⇒
+          log.info("Ho")
+          unbecome() // resets the latest 'become' (just for fun)
+      }, discardOld = false) // push on top instead of replace
+  }
+}
+
+object SwapperApp extends App {
+  val system = ActorSystem("SwapperSystem")
+  val swap = system.actorOf(Props[Swapper], name = "swapper")
+  swap ! Swap // logs Hi
+  swap ! Swap // logs Ho
+  swap ! Swap // logs Hi
+  swap ! Swap // logs Ho
+  swap ! Swap // logs Hi
+  swap ! Swap // logs Ho
+}
+```
 
 
 _Если этот проект окажется полезным тебе - нажми на кнопочку **`★`** в правом верхнем углу._
