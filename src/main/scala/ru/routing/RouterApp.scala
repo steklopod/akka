@@ -10,11 +10,8 @@ object RouterApp extends App {
   val router = system.actorOf(Props[RouterPool])
 
   router ! Work()
-
   router ! Work()
-
   router ! Work()
-
   Thread.sleep(100)
 
   system.actorOf(Props[Worker], "w1")
@@ -27,9 +24,7 @@ object RouterApp extends App {
   val routerGroup           = system.actorOf(Props(classOf[RouterGroup], workers))
 
   routerGroup ! Work()
-
   routerGroup ! Work()
-
   Thread.sleep(100)
 
   system.terminate()

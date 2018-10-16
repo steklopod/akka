@@ -1,9 +1,7 @@
 package ru.routing
 
-import scala.util
-
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import Worker._
+import akka.actor.{Actor, ActorRef, Props}
+import ru.routing.Worker._
 
 class RouterPool extends Actor {
 

@@ -4,18 +4,15 @@ import akka.actor.{ActorSystem, Props}
 import akka.routing.{RandomGroup, FromConfig}
 import Worker._
 
-object Random extends App {
+object RandomApp extends App {
 
   val system = ActorSystem("Random-Router")
 
   val routerPool = system.actorOf(FromConfig.props(Props[Worker]), "random-router-pool")
 
   routerPool ! Work()
-
   routerPool ! Work()
-
   routerPool ! Work()
-
   routerPool ! Work()
 
   Thread.sleep(100)
