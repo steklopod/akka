@@ -23,7 +23,11 @@ libraryDependencies ++= Seq(
   "org.scalacheck"     %% "scalacheck"             % "1.13.5" % Test,
   "com.typesafe.akka"  %% "akka-actor"             % akkaVersion,
   "com.typesafe.akka"  %% "akka-slf4j"             % akkaVersion,
-  "com.typesafe.akka"  %% "akka-testkit"           % akkaVersion % Test
+  "com.typesafe.akka"         %% "akka-persistence"       % akkaVersion,
+  "com.typesafe.akka"         %% "akka-testkit"           % akkaVersion % Test,
+  "org.iq80.leveldb"          % "leveldb"                 % "0.10",
+  "org.fusesource.leveldbjni" % "leveldbjni-all"          % "1.8"
+
 )
 
 resolvers ++= Seq(
