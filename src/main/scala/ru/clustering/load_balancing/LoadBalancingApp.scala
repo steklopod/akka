@@ -1,7 +1,7 @@
 package ru.clustering.load_balancing
 
 object LoadBalancingApp extends App {
-
+//TODO - разобраться с конфигурацией (не запускается)
 
   //initiate three nodes from backend
   Backend.initiate(2551)

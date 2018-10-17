@@ -6,7 +6,6 @@ import ru.clustering.commons._
 
 import scala.util.Random
 
-
 class Frontend extends Actor {
 
   var backends = IndexedSeq.empty[ActorRef]
@@ -29,8 +28,7 @@ class Frontend extends Actor {
 
 
 object Frontend {
-
-  private var _frontend: ActorRef = _ 
+  private var _frontend: ActorRef = _
 
   def initiate() = {
    val config = ConfigFactory.load().getConfig("Frontend")
