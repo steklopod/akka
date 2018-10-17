@@ -1,9 +1,9 @@
-package ru
+package ru.testing
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, MustMatchers}
-import ru.testing.Counter
+
 import scala.concurrent.duration._
 
 class CounterSpec extends TestKit(ActorSystem("test-system"))
