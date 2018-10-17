@@ -1,4 +1,5 @@
-package ru.persistance.query
+package ru.persistance.query_and_fsm
+
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.persistence.query.journal.leveldb.scaladsl.LeveldbReadJournal

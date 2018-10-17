@@ -1,6 +1,6 @@
-package ru.persistance.fsm
+package ru.persistance.query_and_fsm
 import akka.actor.{ActorSystem, Props}
-import ru.persistance.fsm.Account._
+import ru.persistance.query_and_fsm.Account._
 
 object PersistentFSM_App extends App {
   val system = ActorSystem("persistent-fsm-actors")

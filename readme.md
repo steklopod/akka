@@ -45,6 +45,7 @@
 6. [FSM](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/FSM.md)
 7. [Персистентность](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/persistence.md)
    * [Снимки (Snapshots)](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/snapshots.md)
+   * [Запрос на сохранение (Persistence Query)](https://github.com/steklopod/akka/blob/akka_starter/src/main/resources/readmes/actors/persistence-query.md)
 
 
 Чтобы помочь вам справиться с этими реалиями, `Akka` обеспечивает:
