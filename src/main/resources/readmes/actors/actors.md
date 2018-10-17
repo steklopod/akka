@@ -983,7 +983,7 @@ phases {
 
   # Изящное закрытие кластерных областей.
   # Этот этап не предназначен для добавления пользователями задач.
-  cluster-sharding-shutdown-region {
+  cluster_sharding
     timeout = 10 s
     depends-on = [before-cluster-shutdown]
   }
@@ -991,7 +991,7 @@ phases {
   # Извлечь команду leave для узла, который отключается.
   # Этот этап не предназначен для добавления пользователями задач.
   cluster-leave {
-    depends-on = [cluster-sharding-shutdown-region]
+    cluster_sharding
   }
 
   # Выключение кластеров

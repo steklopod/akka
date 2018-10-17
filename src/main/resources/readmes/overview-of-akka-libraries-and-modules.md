@@ -108,7 +108,7 @@
 ### Cluster Sharding
 
 ```scala
-    "com.typesafe.akka" %% "akka-cluster-sharding" % "2.5.17"
+    "com.typesafe.akka" %% cluster_sharding % "2.5.17"
 ```
 
 `Sharding` помогает решить проблему распределения множества участников среди членов кластера `Akka`. `Sharding` - это шаблон,
