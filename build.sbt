@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"         %% "akka-persistence"       % akkaVersion,
   "com.typesafe.akka"         %% "akka-persistence-query" % akkaVersion,
   "com.typesafe.akka"         %% "akka-stream"            % akkaVersion,
+  "com.typesafe.akka"         %% "akka-remote"            % akkaVersion,
   "com.typesafe.akka"         %% "akka-testkit"           % akkaVersion % Test,
   "org.iq80.leveldb"          % "leveldb"                 % "0.10",
   "org.fusesource.leveldbjni" % "leveldbjni-all"          % "1.8"

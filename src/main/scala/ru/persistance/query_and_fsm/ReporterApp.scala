@@ -12,7 +12,7 @@ object ReporterApp extends App {
     implicit val mat = ActorMaterializer()(system)
 
     val queries = PersistenceQuery(system)
-      .readJournalFor[LeveldbReadJournal](LeveldbReadJournal.Identifier)
+                    .readJournalFor[LeveldbReadJournal](LeveldbReadJournal.Identifier)
 
     val evts: Source[EventEnvelope, NotUsed] = queries.eventsByPersistenceId("account")
     evts.runForeach { evt => println(s"Event $evt")

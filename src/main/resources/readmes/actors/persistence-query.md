@@ -33,20 +33,18 @@ libraryDependencies += "com.typesafe.akka" %% "akka-persistence-query" % "2.5.17
 они не требуются).
 
 ### Читать журналы
-Чтобы выдать запросы, нужно сначала получить экземпляр `ReadJournal`. Чтение журналов осуществляется как плагины 
-сообщества, каждый из которых нацелен на конкретное хранилище данных (например, базы данных `Cassandra` или `JDBC`). 
+Чтобы выдать запросы, нужно сначала получить экземпляр `ReadJournal`. Чтение журналов осуществляется как [плагины сообщества](http://akka.io/community/#plugins-to-akka-persistence-query), 
+каждый из которых нацелен на конкретное хранилище данных (например, базы данных `Cassandra` или `JDBC`). 
 Например, с учетом библиотеки, которая предоставляет `akka.persistence.query.my-read-journal`, получение связанного 
 журнала так же просто, как:
 
 ```scala
 // получить чтение журнала по ID плагина
-val readJournal =
-  PersistenceQuery(system).readJournalFor[MyScaladslReadJournal](
-    "akka.persistence.query.my-read-journal")
+val readJournal = PersistenceQuery(system)
+                   .readJournalFor[MyScaladslReadJournal]("akka.persistence.query.my-read-journal")
 
 // запрос к журналу
-val source: Source[EventEnvelope, NotUsed] =
-  readJournal.eventsByPersistenceId("user-1337", 0, Long.MaxValue)
+val source: Source[EventEnvelope, NotUsed] =  readJournal.eventsByPersistenceId("user-1337", 0, Long.MaxValue)
 
 // материализуйте поток, уничтожая события
 implicit val mat = ActorMaterializer()
