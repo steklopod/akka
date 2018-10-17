@@ -11,9 +11,7 @@ class ParentSpec extends TestKit(ActorSystem("test-system"))
                   with BeforeAndAfterAll
                   with MustMatchers {
 
-  override def afterAll {
-    TestKit.shutdownActorSystem(system)
-  }
+  override def afterAll = TestKit.shutdownActorSystem(system)
 
   "Parent" should "send ping message to child when receive ping it message" in {
     val child = TestProbe()

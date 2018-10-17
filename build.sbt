@@ -31,7 +31,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"         %% "akka-cluster-tools"     % akkaVersion,
   "com.typesafe.akka"         %% "akka-cluster-sharding"  % akkaVersion,
   "com.typesafe.akka"         %% "akka-contrib"           % akkaVersion,
-  "com.typesafe.akka"         %% "akka-testkit"           % akkaVersion,
   "com.typesafe.akka"         %% "akka-testkit"           % akkaVersion % Test,
   "org.iq80.leveldb"          % "leveldb"                 % "0.10",
   "org.fusesource.leveldbjni" % "leveldbjni-all"          % "1.8"
